@@ -1,0 +1,68 @@
+{
+  "version": "v1.1",
+  "stableTarget": 165,
+  "dynamicHotSlots": 20,
+  "domainTarget": 12,
+  "topicTarget": 48,
+  "topics": [
+    {"domain":"geography","slug":"earth-and-maps","name":"地球与地图","target":5,"nodes":[["earth-shape","地球为什么近似球体"],["earth-rotation","地球自转与昼夜"],["latitude-longitude","经纬度如何定位"],["time-zones","世界协调时与时区"],["map-projection","地图投影为什么会变形"]]},
+    {"domain":"geography","slug":"world-regions","name":"世界区域与空间","target":5,"nodes":[["seven-continents","七大洲如何划分"],["five-oceans","五大洋如何划分"],["country-state-territory","国家、政权与领土"],["ocean-sea-gulf-strait","洋、海、湾与海峡"],["population-density","人口密度不等于人口分布"]]},
+    {"domain":"geography","slug":"china-geography","name":"中国区域地理","target":6,"nodes":[["china-location","中国的地理位置"],["china-administrative-levels","中国行政区划层级"],["china-terrain-steps","中国地势三级阶梯"],["china-terrain-types","中国主要地形类型"],["monsoon-climate","中国季风气候"],["china-population-distribution","中国人口分布"]]},
+    {"domain":"geography","slug":"climate-and-earth-systems","name":"气候、资源与地球系统","target":4,"nodes":[["climate-and-weather","天气与气候的区别"],["water-cycle","水循环如何运转"],["plate-tectonics","板块构造"],["south-north-water-resources","中国水资源南北差异"]]},
+
+    {"domain":"history-civilization","slug":"historical-method","name":"史料与历史方法","target":3,"nodes":[["historical-evidence","历史结论从哪里来"],["bc-and-ad","公元纪年与公元前"],["dynasty-and-era","朝代与时代不是一回事"]]},
+    {"domain":"history-civilization","slug":"ancient-china","name":"中国古代史","target":7,"nodes":[["chinese-civilization-origins","中华文明的多元起源"],["shang-oracle-bones","商朝与甲骨文"],["qin-unification","秦统一"],["silk-road","丝绸之路不是一条路"],["population-southward","人口南迁与南方开发"],["sui-unification","隋的统一"],["imperial-examination","科举制度如何变化"]]},
+    {"domain":"history-civilization","slug":"modern-china","name":"中国近现代史","target":5,"nodes":[["opium-war","鸦片战争与近代转折"],["self-strengthening-movement","洋务运动"],["sino-japanese-war-1894","甲午中日战争"],["xinhai-revolution","辛亥革命"],["prc-founding","中华人民共和国成立"]]},
+    {"domain":"history-civilization","slug":"world-civilizations","name":"世界文明与现代转型","target":5,"nodes":[["agricultural-revolution","农业出现如何改变社会"],["ancient-river-civilizations","大河文明不是唯一文明模式"],["greek-roman-legacy","古希腊罗马留下了什么"],["industrial-revolution","工业革命是一段长期过程"],["world-wars-and-order","世界大战与现代国际秩序"]]},
+
+    {"domain":"society-law","slug":"government-and-policy","name":"政府、治理与公共政策","target":4,"nodes":[["state-and-government","国家与政府的区别"],["central-and-local-government","中央与地方如何分工"],["institutions-and-rules","制度为什么不只是一纸规定"],["policy-goal-tool-result","政策目标、工具与结果"]]},
+    {"domain":"society-law","slug":"law-and-rights","name":"法律、权利与责任","target":4,"nodes":[["law-and-morality","法律与道德的边界"],["rights-and-obligations","权利与义务"],["civil-criminal-administrative","民事、刑事与行政责任"],["due-process-and-evidence","程序与证据为什么重要"]]},
+    {"domain":"society-law","slug":"public-services-and-security","name":"公共服务与社会保障","target":4,"nodes":[["public-goods","公共物品"],["public-services","公共服务不是没有成本"],["social-insurance","社会保险的基本逻辑"],["tax-and-fiscal-spending","税收与财政支出"]]},
+    {"domain":"society-law","slug":"social-cooperation","name":"社会协作与共同问题","target":3,"nodes":[["externalities","外部性"],["information-asymmetry","信息不对称"],["collective-action","集体行动难题"]]},
+
+    {"domain":"economy-finance","slug":"economic-basics","name":"经济学基础","target":4,"nodes":[["scarcity-and-choice","稀缺与选择"],["opportunity-cost","机会成本"],["supply-and-demand","供给与需求"],["price-signals","价格如何传递信息"]]},
+    {"domain":"economy-finance","slug":"macroeconomy","name":"宏观经济与政策","target":5,"nodes":[["gdp","国内生产总值能说明什么"],["nominal-and-real","名义值与实际值"],["inflation","通货膨胀不等于个别商品涨价"],["monetary-policy","货币政策如何传导"],["fiscal-policy","财政政策如何影响经济"]]},
+    {"domain":"economy-finance","slug":"personal-finance","name":"个人财务常识","target":3,"nodes":[["interest-rate","利率是资金的价格"],["compound-interest","复利会同时放大收益和债务"],["risk-and-return","风险与收益通常不能分开"]]},
+    {"domain":"economy-finance","slug":"business-trade-and-work","name":"商业、贸易与就业","target":3,"nodes":[["competition-and-monopoly","竞争与垄断"],["unemployment-rate","就业与失业率"],["exchange-rate-and-trade","汇率与国际贸易"]]},
+
+    {"domain":"math-logic","slug":"numbers-and-estimation","name":"数字、单位与估算","target":3,"nodes":[["percent-and-percentage-point","百分比与百分点"],["units-and-dimensions","先统一单位再比较"],["order-of-magnitude","数量级估算"]]},
+    {"domain":"math-logic","slug":"probability-and-statistics","name":"概率与统计","target":3,"nodes":[["probability-not-certainty","概率不是对单次结果的保证"],["mean-median-distribution","平均数、中位数与分布"],["sampling-and-bias","样本为什么会有偏差"]]},
+    {"domain":"math-logic","slug":"logic-and-reasoning","name":"逻辑与推理","target":3,"nodes":[["correlation-and-causation","相关不等于因果"],["necessary-and-sufficient","必要条件与充分条件"],["counterexample","一个反例能推翻什么"]]},
+    {"domain":"math-logic","slug":"data-literacy","name":"数据与图表阅读","target":3,"nodes":[["chart-axis","图表坐标轴可以改变直观感受"],["absolute-and-relative-change","绝对变化与相对变化"],["uncertainty-and-error","测量误差与不确定性"]]},
+
+    {"domain":"natural-science","slug":"physics-basics","name":"物理基础","target":4,"nodes":[["motion-and-reference","运动取决于参照物"],["force-and-acceleration","力改变运动状态"],["energy-and-power","能量与功率不是一回事"],["heat-and-temperature","热量与温度不是一回事"]]},
+    {"domain":"natural-science","slug":"chemistry-and-materials","name":"化学与材料","target":4,"nodes":[["atoms-and-elements","原子、元素与分子"],["chemical-reaction","化学反应重新组合了什么"],["acid-base-ph","酸碱度与 pH"],["states-of-matter","物质状态如何改变"]]},
+    {"domain":"natural-science","slug":"biology-and-evolution","name":"生命与演化","target":4,"nodes":[["cells-and-genes","细胞、DNA 与基因"],["evolution-natural-selection","演化与自然选择"],["virus-and-bacteria","病毒与细菌的区别"],["ecosystem-food-web","生态系统与食物网"]]},
+    {"domain":"natural-science","slug":"earth-and-space","name":"地球与宇宙","target":3,"nodes":[["solar-system-scale","太阳系有多大"],["moon-phases-eclipses","月相、日食与月食"],["stars-and-light-years","恒星与光年"]]},
+    {"domain":"natural-science","slug":"energy-and-environment","name":"能源与环境科学","target":3,"nodes":[["greenhouse-effect","温室效应与气候变化"],["fossil-and-renewable-energy","化石能源与可再生能源"],["pollution-and-dose","污染风险也要看剂量"]]},
+
+    {"domain":"health-safety","slug":"body-and-medicine","name":"人体与医学常识","target":4,"nodes":[["immune-system-and-vaccines","免疫系统与疫苗"],["antibiotics-resistance","抗生素不能治疗病毒感染"],["inflammation-and-fever","炎症与发热是反应不是病名"],["medicine-dose","药物效果与剂量"]]},
+    {"domain":"health-safety","slug":"nutrition-activity-sleep","name":"营养、运动与睡眠","target":4,"nodes":[["energy-balance","能量摄入与消耗"],["macro-and-micronutrients","宏量营养素与微量营养素"],["sleep-and-circadian-rhythm","睡眠与昼夜节律"],["exercise-adaptation","运动效果来自长期适应"]]},
+    {"domain":"health-safety","slug":"mental-health-and-cognition","name":"心理健康与认知","target":3,"nodes":[["stress-response","压力反应何时有用何时有害"],["memory-and-retrieval","记忆需要提取而不只是重复阅读"],["mental-health-help","心理困扰何时需要专业帮助"]]},
+    {"domain":"health-safety","slug":"safety-and-first-aid","name":"安全与急救","target":4,"nodes":[["emergency-priorities","紧急情况先确保现场安全"],["choking-and-cpr","气道梗阻与心肺复苏不是一回事"],["fire-and-electric-safety","火灾与用电安全"],["household-poisoning","家庭中毒风险与求助原则"]]},
+
+    {"domain":"computer-security","slug":"computer-and-internet","name":"计算机与互联网基础","target":3,"nodes":[["hardware-software-os","硬件、软件与操作系统"],["internet-and-web","互联网不等于万维网"],["cloud-sync-backup","云同步不等于备份"]]},
+    {"domain":"computer-security","slug":"privacy-and-accounts","name":"隐私与账号安全","target":3,"nodes":[["unique-passwords","不同账号不要重复使用密码"],["multi-factor-authentication","多因素认证多保护了什么"],["app-permissions","应用权限遵循最小必要原则"]]},
+    {"domain":"computer-security","slug":"cybersecurity-and-scams","name":"网络安全与诈骗识别","target":3,"nodes":[["phishing","钓鱼信息利用的是人的判断"],["malware-and-ransomware","恶意软件与勒索软件"],["https-and-encryption","HTTPS 保护什么、不保护什么"]]},
+    {"domain":"computer-security","slug":"ai-and-data-systems","name":"AI 与数据系统","target":3,"nodes":[["algorithm-and-model","算法与模型的区别"],["generative-ai-hallucination","生成式 AI 为什么会编造"],["recommendation-systems","推荐系统如何形成信息偏好"]]},
+
+    {"domain":"engineering-infrastructure","slug":"buildings-and-manufacturing","name":"建筑与制造","target":2,"nodes":[["load-bearing-structure","建筑结构如何传递荷载"],["standardization-and-tolerance","标准化与制造公差"]]},
+    {"domain":"engineering-infrastructure","slug":"electricity-infrastructure","name":"电力与能源设施","target":3,"nodes":[["power-grid-balance","电网为什么要保持实时平衡"],["generation-and-storage","发电与储能解决不同问题"],["household-grounding","家庭用电中的接地与漏电保护"]]},
+    {"domain":"engineering-infrastructure","slug":"water-transport-cities","name":"水、交通与城市系统","target":3,"nodes":[["water-supply-wastewater","自来水与污水处理是两套系统"],["road-rail-capacity","道路与轨道交通的容量差异"],["urban-drainage","城市内涝不只取决于降雨量"]]},
+    {"domain":"engineering-infrastructure","slug":"communication-and-logistics","name":"通信与物流","target":2,"nodes":[["mobile-network-basics","手机如何连接移动网络"],["supply-chain-logistics","供应链与物流的区别"]]},
+
+    {"domain":"language-communication","slug":"reading-and-writing","name":"阅读与写作","target":3,"nodes":[["main-claim-and-evidence","先找主张再找证据"],["paragraph-structure","一个段落通常只承担一个中心任务"],["ambiguity-and-context","歧义需要靠语境消除"]]},
+    {"domain":"language-communication","slug":"argument-and-explanation","name":"论证与解释","target":3,"nodes":[["fact-opinion-inference","事实、观点与推断"],["premise-and-conclusion","前提与结论"],["common-fallacies","常见逻辑谬误不是反驳口号"]]},
+    {"domain":"language-communication","slug":"communication-and-negotiation","name":"沟通与协商","target":2,"nodes":[["active-listening","倾听不等于同意"],["positions-and-interests","协商中区分立场与利益"]]},
+    {"domain":"language-communication","slug":"media-literacy","name":"媒介与信息理解","target":2,"nodes":[["headline-and-framing","标题与叙事框架会影响判断"],["cross-check-sources","重要信息要交叉核对来源"]]},
+
+    {"domain":"culture-daily-life","slug":"literature-and-narrative","name":"文学与叙事","target":2,"nodes":[["fiction-and-nonfiction","虚构与非虚构的约定"],["narrative-perspective","叙事视角改变我们知道什么"]]},
+    {"domain":"culture-daily-life","slug":"visual-art-and-design","name":"视觉艺术与设计","target":2,"nodes":[["composition-and-focus","构图如何引导注意力"],["color-and-context","颜色意义依赖环境与文化"]]},
+    {"domain":"culture-daily-life","slug":"music-performance-film","name":"音乐、表演与影像","target":3,"nodes":[["rhythm-melody-harmony","节奏、旋律与和声"],["theatre-live-performance","现场表演与录制作品的差别"],["film-shots-editing","镜头与剪辑如何制造连续性"]]},
+    {"domain":"culture-daily-life","slug":"daily-culture-and-customs","name":"日常文化与生活方式","target":3,"nodes":[["calendars-and-festivals","历法与节日如何形成"],["cooking-and-heat","烹饪中的传热与食物变化"],["textile-fibers","天然纤维与合成纤维"]]},
+
+    {"domain":"current-affairs-context","slug":"countries-and-organizations","name":"国家与国际组织","target":3,"nodes":[["united-nations","联合国能做什么、不能做什么"],["sovereignty-and-diplomacy","主权与外交承认"],["treaty-and-international-law","条约与国际法"]]},
+    {"domain":"current-affairs-context","slug":"public-indicators","name":"公共数据与指标","target":2,"nodes":[["population-indicators","人口总量、出生率与年龄结构"],["economic-indicators-context","经济指标必须连同口径和时间阅读"]]},
+    {"domain":"current-affairs-context","slug":"events-and-background","name":"事件脉络与背景","target":3,"nodes":[["fact-opinion-prediction","新闻中的事实、观点与预测"],["timeline-and-causality","时间线不自动等于因果链"],["primary-secondary-sources","一手来源与二手报道"]]}
+  ]
+}

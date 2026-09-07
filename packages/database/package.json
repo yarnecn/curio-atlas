@@ -1,0 +1,35 @@
+{
+  "name": "@knowledge-map/database",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint src",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run src --pool=threads --maxWorkers=1",
+    "migrate": "tsx src/migrate.ts up",
+    "rollback": "tsx src/migrate.ts down",
+    "seed": "tsx src/seed.ts",
+    "content-status": "tsx src/content-status.ts",
+    "bootstrap-owner": "tsx src/bootstrap-owner.ts"
+  },
+  "dependencies": {
+    "@knowledge-map/content-schema": "workspace:*",
+    "@knowledge-map/contracts": "workspace:*",
+    "@knowledge-map/domain": "workspace:*",
+    "pg": "8.16.3"
+  },
+  "devDependencies": {
+    "@types/pg": "8.15.5",
+    "tsx": "4.23.13"
+  }
+}

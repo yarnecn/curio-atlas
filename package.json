@@ -1,0 +1,45 @@
+{
+  "name": "knowledge-map",
+  "version": "0.0.0",
+  "private": true,
+  "description": "常识地图：面向成年人的通识重建与个人认知管理平台",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=22.12.0",
+    "pnpm": ">=11.0.0"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:apps": "node scripts/dev.mjs --skip-infra",
+    "infra:up": "docker compose up -d --wait",
+    "infra:down": "docker compose down",
+    "infra:logs": "docker compose logs -f",
+    "db:migrate": "pnpm --filter @knowledge-map/database migrate",
+    "db:rollback": "pnpm --filter @knowledge-map/database rollback",
+    "db:seed": "pnpm --filter @knowledge-map/database seed",
+    "content:status": "pnpm --filter @knowledge-map/database content-status",
+    "auth:bootstrap-owner": "pnpm --filter @knowledge-map/database bootstrap-owner",
+    "source:once": "pnpm --filter @knowledge-map/worker source:once",
+    "image:build": "docker build --build-arg APP_VERSION=0.1.0 -t knowledge-map:0.1.0 .",
+    "crawler:check": "node scripts/crawler-check.mjs",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "content:lint": "node scripts/content-lint.mjs",
+    "content:catalog-check": "node scripts/content-catalog-check.mjs",
+    "migration:check": "node scripts/migration-check.mjs",
+    "build": "turbo run build",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm content:lint && pnpm content:catalog-check && pnpm crawler:check && pnpm migration:check && pnpm build"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.4.1",
+    "eslint": "10.9.1",
+    "globals": "^16.4.0",
+    "turbo": "2.10.12",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.69.0",
+    "vitest": "4.1.11"
+  }
+}

@@ -1,0 +1,15 @@
+.git
+.github
+.next
+.turbo
+**/.next
+**/.turbo
+**/dist
+**/node_modules
+node_modules
+coverage
+*.log
+.env*
+!.env.example
+config/app.config*.json
+!config/app.config.example.json

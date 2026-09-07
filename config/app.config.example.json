@@ -1,0 +1,37 @@
+{
+  "server": {
+    "port": 8080,
+    "publicUrl": "http://localhost:8080",
+    "secureCookies": false
+  },
+  "database": {
+    "url": "postgresql://knowledge_map:knowledge_map_dev@host.docker.internal:5433/knowledge_map",
+    "poolMax": 5,
+    "migrateOnStart": true,
+    "seedStarterOnFirstStart": true
+  },
+  "redis": {
+    "host": "host.docker.internal",
+    "port": 6379
+  },
+  "owner": {
+    "handle": "site-owner",
+    "initialPassword": "CHANGE_ME_AT_LEAST_10_CHARS",
+    "resetPasswordOnStart": false
+  },
+  "worker": {
+    "aiJobRecoverySeconds": 30
+  },
+  "ai": {
+    "apiKey": ""
+  },
+  "sources": {
+    "automationEnabled": false,
+    "scanIntervalMinutes": 5,
+    "scanBatchSize": 10,
+    "draftBatchSize": 5,
+    "fetchTimeoutSeconds": 20,
+    "maxResponseBytes": 2000000,
+    "pythonExecutable": "/usr/bin/python3"
+  }
+}

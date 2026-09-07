@@ -1,0 +1,44 @@
+node_modules/
+.pnpm-store/
+.turbo/
+dist/
+coverage/
+.next/
+
+# Local configuration and secrets
+.env*
+!.env.example
+config/app.config*.json
+!config/app.config.example.json
+
+# Build and tool caches
+.swc/
+.vite/
+*.tsbuildinfo
+.cache/
+
+# Logs, temporary files and local databases
+*.log
+*.pid
+*.pid.lock
+*.sqlite
+*.sqlite3
+*.db
+tmp/
+temp/
+
+# Python tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# WeChat Mini Program local settings
+apps/miniprogram/project.private.config.json

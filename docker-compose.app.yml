@@ -1,0 +1,13 @@
+name: knowledge-map-app
+
+services:
+  app:
+    image: knowledge-map:0.1.0
+    container_name: knowledge-map
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./config/app.config.json:/app/config/app.config.json:ro
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    restart: unless-stopped

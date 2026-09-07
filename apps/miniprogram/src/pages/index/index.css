@@ -1,0 +1,6 @@
+.page { min-height: 100vh; padding: 160px 56px; box-sizing: border-box; }
+.eyebrow, .title, .summary { display: block; }
+.eyebrow { font-size: 24px; font-weight: 700; letter-spacing: 4px; }
+.title { margin-top: 20px; font-family: serif; font-size: 96px; font-weight: 600; }
+.summary { margin-top: 40px; color: #58645c; font-size: 30px; line-height: 1.7; }
+

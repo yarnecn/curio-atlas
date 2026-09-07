@@ -1,0 +1,28 @@
+packages:
+  - apps/*
+  - packages/*
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  '@tarojs/binding': true
+  '@tarojs/cli': true
+  core-js: true
+  core-js-pure: true
+  esbuild: true
+  msgpackr-extract: true
+  sharp: true
+
+minimumReleaseAgeExclude:
+  - '@types/node@26.4.1'
+  - webpack@5.110.3
+
+overrides:
+  minipass: 7.1.2
+  swiper: 12.2.0
+  terser-webpack-plugin: 5.3.14
+  vite: 6.4.3
+
+peerDependencyRules:
+  allowedVersions:
+    vite: 6.4.3

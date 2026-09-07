@@ -1,0 +1,13 @@
+:root {
+  --color-ink: #17201a;
+  --color-paper: #f6f7f4;
+  --color-leaf: #276749;
+  --color-moss: #91a49a;
+  --color-rust: #a9472f;
+  --color-blue: #315f86;
+  --color-line: #d5dcd7;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --radius-card: 0.5rem;
+}

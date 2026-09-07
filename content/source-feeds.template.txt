@@ -1,0 +1,8 @@
+# 每行一个经过人工确认的页面或站点入口，字段使用 | 分隔。
+# 话题slug | 来源名 | 发布机构 | HTTPS入口 | 来源类型 | 许可说明 | 检查间隔小时 | 抓取范围 | 最多页面 | 自动维护
+#
+# 单页手动抓取：
+# earth-and-maps | 世界海洋资料 | 发布机构名称 | https://example.org/exact-page | official | link_and_fact_reference_only | 168 | single_page | 1 | false
+#
+# 指定站点自动发现同站页面：
+# earth-and-maps | 地理资料站 | 发布机构名称 | https://example.org/geography/ | open_education | link_and_fact_reference_only | 168 | website | 10 | true
