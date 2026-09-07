@@ -19,6 +19,7 @@ minimumReleaseAgeExclude:
 
 overrides:
   minipass: 7.1.2
+  serialize-javascript: 7.1.1
   swiper: 12.2.0
   terser-webpack-plugin: 5.3.14
   vite: 6.4.3
