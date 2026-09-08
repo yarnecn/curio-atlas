@@ -1,28 +1,10 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
-  "globalPassThroughEnv": [
-    "NODE_ENV",
-    "WEB_PORT",
-    "API_PORT",
-    "NEXT_PUBLIC_API_BASE_URL",
-    "DATABASE_URL",
-    "DATABASE_POOL_MAX",
-    "REDIS_HOST",
-    "REDIS_PORT",
-    "REDIS_URL",
-    "AI_JOB_RECOVERY_INTERVAL_MS",
-    "S3_ENDPOINT",
-    "S3_REGION",
-    "S3_BUCKET",
-    "S3_ACCESS_KEY",
-    "S3_SECRET_KEY",
-    "S3_FORCE_PATH_STYLE"
-  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "inputs": ["$TURBO_DEFAULT$"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "dev": {

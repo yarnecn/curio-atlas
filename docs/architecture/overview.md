@@ -2,13 +2,13 @@
 
 ## 决策摘要
 
-系统采用 TypeScript Monorepo 和模块化单体。Next.js 网站、Taro 小程序、NestJS REST API 与 NestJS standalone worker 共用契约、内容 Schema、纯领域规则、API 客户端和设计变量。PostgreSQL 是事实主库，Redis/BullMQ 处理异步任务，S3 兼容对象存储保存文件。
+系统采用 TypeScript Monorepo 和模块化单体。Next.js 网站、Taro 小程序、NestJS REST API 与 NestJS standalone worker 共用契约、内容 Schema、纯领域规则、API 客户端和设计变量。MySQL 是事实主库，Redis/BullMQ 处理异步任务；首版没有文件上传，因此不部署对象存储。
 
 网站和小程序共用一个内容内核与 API，不重复建设业务后端。两端的第一入口都是打开即看的常识流，不要求用户先搜索或登录。网站额外负责公开传播、SEO、完整投稿和管理审核；小程序负责高频浏览、投票、收藏和可选学习，首版不承载复杂编辑器。
 
 ```text
 Next.js 网站 ─┐
-Taro 小程序 ──┼──> NestJS REST API ──> PostgreSQL
+Taro 小程序 ──┼──> NestJS REST API ──> MySQL
 管理后台 ─────┘           │
                           └──> Redis / BullMQ ──> worker
                                                    │
@@ -44,7 +44,7 @@ API 按以下模块边界组织：
 
 ## 数据与依赖规则
 
-1. PostgreSQL 是内容、版本、来源、投票、学习记录、配置和审计数据的事实源；
+1. MySQL 是内容、版本、来源、投票、学习记录、配置和审计数据的事实源；
 2. Redis 只承载队列、缓存、限流和短期协调状态，不能成为事实源；
 3. Web 和小程序只能经 API 修改业务数据；
 4. 外部数据、模型、认证和对象存储必须经 Adapter 接入；
@@ -75,12 +75,12 @@ audit_log / policy_config / source_connector
 
 ## 本地与生产拓扑
 
-源码开发时可在宿主机分别运行 Web 3000、API 4000 和 worker。生产环境使用单一应用镜像，对外只开放 8080；Web、API、worker 和 Python 抓取器在同一容器中运行，PostgreSQL 与 Redis 保持为外部有状态服务。部署参数和密钥统一读取挂载的 `app.config.json`。
+源码开发时可在宿主机分别运行 Web 3000、API 4000 和 worker。生产环境使用单一应用镜像，对外只开放 8080；Web、API、worker 和 Python 抓取器在同一容器中运行，MySQL 与 Redis 保持为外部有状态服务。部署参数和密钥统一读取挂载的 `app.config.json`。
 
-首版生产采用单节点或同一区域的极简拓扑：反向代理、Web、API、低并发 worker、PostgreSQL 和 Redis；静态资源优先使用云对象存储与 CDN。生产不要求照搬本地 MinIO。部署资源预算和扩容触发器见 [低成本部署与性能方案](./cost-performance.md)。
+首版生产采用单节点或同一区域的极简拓扑：反向代理、Web、API、低并发 worker、MySQL 和 Redis；静态资源优先使用云对象存储与 CDN。生产不要求照搬本地 MinIO。部署资源预算和扩容触发器见 [低成本部署与性能方案](./cost-performance.md)。
 
 ## 演进边界
 
-真实容量或团队边界出现前不拆微服务。PostgreSQL 标题、别名和全文检索先行；内容和推荐评测稳定后再启用 pgvector；独立搜索、托管数据库、多个 worker 或 Kubernetes 只在监控数据证明有必要时评估。数据库选型理由见 [ADR-0004](../adr/0004-keep-postgresql-as-the-fact-store.md)。
+真实容量或团队边界出现前不拆微服务。MySQL 索引和基础全文检索先行；语义推荐确有收益时再独立评估向量能力。独立搜索、托管数据库、多个 worker 或 Kubernetes 只在监控数据证明有必要时引入。当前数据库决策见 [ADR-0005](../adr/0005-start-clean-on-mysql.md)。
 
 AI 管理员采用“观察—建议—验证—审批—执行—回滚”闭环，权限与成本策略见 [AI 管理员方案](./ai-operator.md)。

@@ -10,6 +10,5 @@ node_modules
 coverage
 *.log
 .env*
-!.env.example
 config/app.config*.json
 !config/app.config.example.json

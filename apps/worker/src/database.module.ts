@@ -15,7 +15,7 @@ class WorkerDatabaseLifecycle implements OnApplicationShutdown {
 @Global()
 @Module({
   providers: [
-    { provide: DATABASE_POOL, useFactory: (): Pool => createDatabasePool({ max: 2 }) },
+    { provide: DATABASE_POOL, useFactory: (): Pool => createDatabasePool({ connectionLimit: 2 }) },
     {
       provide: Phase1Repository,
       inject: [DATABASE_POOL],

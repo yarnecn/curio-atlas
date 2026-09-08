@@ -1,95 +1,59 @@
-# 常识地图
+# Curio Atlas
 
-面向成年人的、打开即看的主动推荐型常识百科。Phase 0 工程骨架和 Phase 1 内容内核与审核闭环已完成封板。
+打开就能看的常识百科：短、完整、可连续阅读。匿名用户可以浏览；投稿、评分和审核使用账号；系统支持来源抓取、AI 整理、人工审核、版本管理和相关常识串联。
 
-## 推荐部署方式
+## 本地运行
 
-生产部署使用一个 Docker 镜像：网站、API、worker 和 Python 抓取器全部内置，只需外部 PostgreSQL、Redis 和一个 JSON 配置文件。构建、运行和按版本升级见 [单镜像部署](./infra/deployment/README.md)，配置模板见 [app.config.example.json](./config/app.config.example.json)。
+要求：Node.js 24、pnpm 11、MySQL 8.4、Redis。
 
-## 本地要求
-
-- Node.js 22.12 或更高版本（推荐 Node.js 24）
-- pnpm 11
-- Python 3.11+（只在不使用生产镜像的本地源码开发时需要；镜像已内置）
-- Docker Desktop / Docker Engine + Compose v2
-
-Windows 首次使用 pnpm 时，如果本机已安装较老的 Node.js，请先切换到 Node.js 22/24，再运行下面的命令。
-
-## 首次启动
+1. 复制 `config/app.config.example.json` 为 `config/app.config.json`。
+2. 把数据库账号、Redis 地址和站长初始密码改成自己的配置。模板已按本机 `localhost` 设置。
+3. 运行唯一的启动命令：
 
 ```bash
-pnpm install
-pnpm infra:up
-pnpm db:migrate
-pnpm db:seed
-pnpm auth:bootstrap-owner
-pnpm dev:apps
+npm start
 ```
 
-这部分仅供修改源码的开发者使用，生产运行不需要执行这些命令。运行 `pnpm auth:bootstrap-owner` 前，开发者需要临时设置 `BOOTSTRAP_OWNER_PASSWORD`；生产站长账号完全由 `app.config.json` 初始化。`pnpm dev:apps` 会并行启动：
+打开 <http://localhost:8080>。停止时按 `Ctrl+C`。
 
-- 网站：http://localhost:3000
-- API：http://localhost:4000/health
-- worker：连接 Redis 后消费一次启动自检任务
-- MinIO 控制台：http://localhost:9001
+启动过程会自动完成这些工作：构建应用、创建空 MySQL 数据库、检查完整表结构、补齐 12 个领域和 48 个话题、写入 20 篇闭环示例常识、初始化站长账号，然后启动网站、API 和 worker。所有写入均为幂等操作，重复启动不会产生重复内容，也不会重置已有密码。
 
-停止前台应用使用 `Ctrl+C`；基础设施默认保留运行，使用 `pnpm infra:down` 停止。
+MySQL 和 Redis 由你自行准备；项目启动不会下载或创建数据库、Redis 容器。
 
-如果只开发前端或 API，可以先运行 `pnpm infra:up`，再运行：
+## 构建镜像
 
 ```bash
-pnpm --filter @knowledge-map/web dev
-pnpm --filter @knowledge-map/api dev
-pnpm --filter @knowledge-map/worker dev
-pnpm --filter @knowledge-map/miniprogram dev
+npm run image:build
 ```
 
-本机已经单独运行 PostgreSQL 和 Redis 时，可以在 `.env` 配置连接信息并设置 `SKIP_INFRA=true`，然后运行 `pnpm dev`。Redis 只供 API 和 worker 使用，Web/小程序统一通过 API 访问业务数据。
+镜像名为 `curio-atlas:0.1.0`，网站、API、worker 和 Python 抓取器都在镜像内。运行镜像时只需挂载 `config/app.config.json`，参考 [部署说明](./infra/deployment/README.md)。
 
-## 质量检查
+## 配置原则
 
-```bash
-pnpm check
-pnpm content:status
-docker compose config --quiet
-```
+- 应用只读取 `config/app.config.json`，不要求用户设置环境变量。
+- 源码本地运行的 MySQL 示例地址是 `mysql://knowledge_map:knowledge_map_dev@localhost:3306/knowledge_map`。
+- 容器连接宿主机服务时，把主机名改为 `host.docker.internal`。
+- `owner.initialPassword` 必须是自己的 10–128 位密码；`resetPasswordOnStart` 保持 `false`。
+- AI 默认为零 Token 的规则模式；可在管理台切换本地 Ollama 或 OpenAI 兼容接口。
 
-`pnpm check` 依次执行 lint、类型检查、单元测试、内容规范检查、V1 目录检查、Python 抓取器语法检查、迁移检查和生产构建。`pnpm content:status` 查看各话题的已发布、待审核和 V1 目标数量。
+## 项目入口
 
-## 你可以做什么
+- 使用功能：[功能清单](./docs/product/function-list.md)
+- 交给其他 AI 接续：[接续说明](./docs/START-HERE.md)
+- 安装与部署：[单镜像部署](./infra/deployment/README.md)
+- 产品方向：[产品愿景与闭环](./docs/product/product-vision-and-loops.md)
+- 系统设计：[架构概览](./docs/architecture/overview.md)
 
-完整操作步骤见 [功能清单](./docs/product/function-list.md)。需要交给其他 AI 接续时，先让它阅读 [接续说明](./docs/START-HERE.md)；准备部署生产时按 [部署与安装](./infra/deployment/README.md) 执行。
-
-## 目录
+## 代码结构
 
 ```text
-apps/
-  web/          Next.js 公开网站、个人中心和首版管理后台
-  miniprogram/  Taro + React 微信小程序
-  api/          NestJS REST API
-  worker/       NestJS standalone worker + BullMQ
-packages/
-  contracts/ content-schema/ domain/ api-client/
-  design-tokens/ config/ test-fixtures/
-infra/
-  docker/ migrations/ deployment/
-docs/
-  product/ architecture/ adr/ content-guidelines/
+apps/                 网站、小程序、API、worker
+packages/             共享契约、领域规则、数据库和设计变量
+content/v1/           首版内容目录
+infra/mysql/          MySQL 完整建库结构
+tools/crawler/        Python 白名单抓取器
+config/               唯一运行配置模板
+docs/                 产品、架构、内容和接续文档
 ```
 
-## 源码开发配置
-
-本地默认值已经能直接运行。只有修改源码时才会用 `.env`：需要覆盖开发机连接信息时，将 [.env.example](./.env.example) 复制为 `.env`，不要提交真实密钥。生产镜像不读取这份文件，也不要求用户设置环境变量；它只读取挂载的 `config/app.config.json`。
-
-## 当前边界
-
-- 已实现匿名浏览、昵称注册、密码登录和服务端会话；投稿/评分需要登录，审核后台按角色隔离。找回密码、管理员多因素认证和公网限流仍是上线门槛。
-- 首页一次按领域比例展示最多 12 条闭环短文；详情页支持沿相关常识连续阅读。搜索、已读去重和个性化留在后续阶段。
-- 内部编辑候选可以绕开公开投票进入人工审核，正式常识支持追加版本和可审计回滚。
-- AI 处理可在管理台选择零 Token 规则模式、本地 Ollama 或 OpenAI 兼容接口；生产远程密钥只从挂载配置文件读取。
-- 白名单来源监测、内容指纹、证据摘要和 AI 候选生成链路已实现，但默认关闭，且不会自动搜索全网来源。
-- 尚未实现公开搜索和完整学习系统。
-- 外部信息不会自动发布。
-- Docker 未运行时仍可执行静态检查和构建，但完整启动需要 Docker daemon。
-
-产品方向与闭环见 [产品愿景与闭环](./docs/product/product-vision-and-loops.md)，产品边界见 [MVP PRD](./docs/product/mvp.md)，架构见 [架构概览](./docs/architecture/overview.md)，本阶段运行细节见 [Phase 1 实现说明](./docs/product/phase-1-implementation.md)。
+数据库从 MySQL 空库开始，不提供 PostgreSQL 数据迁移、回滚或双数据库兼容层。外部抓取内容不会自动发布，必须经过 AI 整理与人工审核。

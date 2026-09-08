@@ -31,6 +31,9 @@ export default function KnowledgeDetailPage({ params }: { params: Promise<{ slug
     <nav><Link href="/">← 返回随便看看</Link><Link href="/contribute">贡献精华</Link></nav>
     <article className="knowledge-detail">
       <div className="knowledge-meta"><span>{node.domainName} · {node.topicName}</span><span>约 {node.readingTimeMinutes} 分钟</span></div>
+      <span className="creator-mark creator-mark-static" data-kind={node.creatorKind}>
+        {node.creatorLabel}{node.creatorKind === 'contributor' && node.creatorHandle ? ` · ${node.creatorHandle}` : ''}
+      </span>
       <h1>{node.title}</h1>
       <div className="knowledge-body">
         {node.sections.map((section, index) => <section className="knowledge-section" key={`${section.heading ?? '核心内容'}-${index}`}>

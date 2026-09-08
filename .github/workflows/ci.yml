@@ -12,6 +12,19 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: knowledge_map
+          MYSQL_USER: knowledge_map
+          MYSQL_PASSWORD: knowledge_map_dev
+          MYSQL_ROOT_PASSWORD: knowledge_map_root_dev
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uknowledge_map -pknowledge_map_dev --silent"
+          --health-interval=5s --health-timeout=3s --health-retries=30
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -27,7 +40,19 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm content:lint
-      - run: pnpm migration:check
+      - run: pnpm content:catalog-check
+      - run: pnpm crawler:check
       - run: pnpm build
-      - run: docker compose config --quiet
+      - name: Verify clean MySQL initialization is idempotent
+        run: >-
+          node packages/database/dist/initialize.js &&
+          node packages/database/dist/initialize.js &&
+          node packages/database/dist/mysql-smoke.js
+        env:
+          DATABASE_URL: mysql://knowledge_map:knowledge_map_dev@127.0.0.1:3306/knowledge_map
+          BOOTSTRAP_OWNER_HANDLE: site-owner
+          BOOTSTRAP_OWNER_PASSWORD: ci-only-password
+          BOOTSTRAP_OWNER_RESET: 'false'
+          KNOWLEDGE_MAP_ROOT: ${{ github.workspace }}
+      - run: docker compose -f docker-compose.app.yml config --quiet
       - run: pnpm audit --prod --audit-level high

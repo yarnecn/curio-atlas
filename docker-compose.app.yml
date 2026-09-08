@@ -1,9 +1,9 @@
-name: knowledge-map-app
+name: curio-atlas-app
 
 services:
   app:
-    image: knowledge-map:0.1.0
-    container_name: knowledge-map
+    image: curio-atlas:0.1.0
+    container_name: curio-atlas
     ports:
       - '8080:8080'
     volumes:

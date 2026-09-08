@@ -1,39 +1,18 @@
 import { spawn } from 'node:child_process';
 import { createServer, request as proxyRequest } from 'node:http';
-import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {
+  appRoot,
+  boolean,
+  fail,
+  firstExisting,
+  integer,
+  loadAppConfig,
+  readAppVersion,
+  text,
+} from './app-config.mjs';
 
-const appRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const configPath = resolve(process.argv[2] ?? resolve(appRoot, 'config/app.config.json'));
-
-function fail(message) {
-  console.error(`[config] ${message}`);
-  process.exit(1);
-}
-
-if (!existsSync(configPath)) fail(`找不到配置文件：${configPath}。请复制 app.config.example.json 后挂载到此位置。`);
-let config;
-try {
-  config = JSON.parse(readFileSync(configPath, 'utf8'));
-} catch (error) {
-  fail(`配置文件不是有效 JSON：${error instanceof Error ? error.message : String(error)}`);
-}
-
-function text(path, value, { allowEmpty = false } = {}) {
-  if (typeof value !== 'string' || (!allowEmpty && value.trim() === '')) fail(`${path} 必须是${allowEmpty ? '' : '非空'}字符串。`);
-  return value;
-}
-
-function integer(path, value, min, max) {
-  if (!Number.isInteger(value) || value < min || value > max) fail(`${path} 必须是 ${min}-${max} 的整数。`);
-  return value;
-}
-
-function boolean(path, value) {
-  if (typeof value !== 'boolean') fail(`${path} 必须是 true 或 false。`);
-  return value;
-}
+const { config, configPath } = loadAppConfig(process.argv[2]);
 
 const publicUrl = text('server.publicUrl', config.server?.publicUrl).replace(/\/$/, '');
 let parsedPublicUrl;
@@ -47,9 +26,7 @@ const ownerPassword = text('owner.initialPassword', config.owner?.initialPasswor
 if (ownerPassword.length < 10 || ownerPassword.length > 128 || /change.me|请修改|替换/i.test(ownerPassword)) {
   fail('owner.initialPassword 必须改成你自己的 10-128 位密码，不能保留示例值。');
 }
-
-const versionFile = resolve(appRoot, 'VERSION');
-const appVersion = existsSync(versionFile) ? readFileSync(versionFile, 'utf8').trim() : 'development';
+const appVersion = readAppVersion();
 const internalApiPort = 4000;
 const internalWebPort = 3000;
 const configOrigin = parsedPublicUrl.origin;
@@ -79,14 +56,8 @@ Object.assign(process.env, {
   KNOWLEDGE_MAP_ROOT: appRoot,
   BOOTSTRAP_OWNER_HANDLE: ownerHandle,
   BOOTSTRAP_OWNER_PASSWORD: ownerPassword,
-  BOOTSTRAP_OWNER_ONLY_IF_MISSING: String(!boolean('owner.resetPasswordOnStart', config.owner?.resetPasswordOnStart)),
+  BOOTSTRAP_OWNER_RESET: String(boolean('owner.resetPasswordOnStart', config.owner?.resetPasswordOnStart)),
 });
-
-function firstExisting(paths) {
-  const found = paths.find(existsSync);
-  if (!found) fail(`镜像缺少运行文件：${paths.join(' 或 ')}`);
-  return found;
-}
 
 const apiEntry = firstExisting([resolve(appRoot, 'apps/api/dist/main.js')]);
 const workerEntry = firstExisting([resolve(appRoot, 'apps/worker/dist/main.js')]);
@@ -99,22 +70,19 @@ const databaseDist = firstExisting([
   resolve(appRoot, 'packages/database/dist'),
 ]);
 
-function runInitialization(name, entry, args = []) {
-  return new Promise((resolvePromise, reject) => {
-    console.log(`[startup] ${name}`);
-    const child = spawn(process.execPath, [entry, ...args], { cwd: appRoot, env: process.env, stdio: 'inherit', windowsHide: true });
-    child.once('error', reject);
-    child.once('exit', (code) => code === 0 ? resolvePromise() : reject(new Error(`${name} 失败，退出码 ${code ?? 'unknown'}`)));
+await new Promise((resolvePromise, reject) => {
+  console.log('[startup] 检查 MySQL 结构和初始数据');
+  const child = spawn(process.execPath, [resolve(databaseDist, 'initialize.js')], {
+    cwd: appRoot,
+    env: process.env,
+    stdio: 'inherit',
+    windowsHide: true,
   });
-}
-
-if (boolean('database.migrateOnStart', config.database?.migrateOnStart)) {
-  await runInitialization('执行数据库迁移', resolve(databaseDist, 'migrate.js'), ['up']);
-}
-if (boolean('database.seedStarterOnFirstStart', config.database?.seedStarterOnFirstStart)) {
-  await runInitialization('写入首版目录和示例数据（幂等）', resolve(databaseDist, 'seed.js'));
-}
-await runInitialization('确认站长初始账号', resolve(databaseDist, 'bootstrap-owner.js'));
+  child.once('error', reject);
+  child.once('exit', (code) => code === 0
+    ? resolvePromise()
+    : reject(new Error(`MySQL 初始化失败，退出码 ${code ?? 'unknown'}`)));
+});
 
 let shuttingDown = false;
 const children = [];

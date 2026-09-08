@@ -17,6 +17,9 @@ minimumReleaseAgeExclude:
   - '@types/node@26.4.1'
   - webpack@5.110.3
 
+ignoredOptionalDependencies:
+  - pg
+
 overrides:
   minipass: 7.1.2
   serialize-javascript: 7.1.1

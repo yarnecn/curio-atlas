@@ -5,13 +5,11 @@
     "secureCookies": false
   },
   "database": {
-    "url": "postgresql://knowledge_map:knowledge_map_dev@host.docker.internal:5433/knowledge_map",
-    "poolMax": 5,
-    "migrateOnStart": true,
-    "seedStarterOnFirstStart": true
+    "url": "mysql://knowledge_map:knowledge_map_dev@localhost:3306/knowledge_map",
+    "poolMax": 5
   },
   "redis": {
-    "host": "host.docker.internal",
+    "host": "localhost",
     "port": 6379
   },
   "owner": {
@@ -32,6 +30,6 @@
     "draftBatchSize": 5,
     "fetchTimeoutSeconds": 20,
     "maxResponseBytes": 2000000,
-    "pythonExecutable": "/usr/bin/python3"
+    "pythonExecutable": "python"
   }
 }

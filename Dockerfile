@@ -3,7 +3,9 @@ FROM node:24-bookworm-slim AS builder
 WORKDIR /src
 RUN corepack enable && corepack prepare pnpm@11.19.0 --activate
 COPY . .
-RUN pnpm install --frozen-lockfile
+RUN pnpm config set fetch-retries 5 \
+ && pnpm config set fetch-timeout 120000 \
+ && pnpm install --frozen-lockfile
 RUN pnpm --filter @knowledge-map/api build \
  && pnpm --filter @knowledge-map/worker build \
  && pnpm --filter @knowledge-map/web build
@@ -12,11 +14,11 @@ RUN pnpm --offline --filter @knowledge-map/api deploy --prod --legacy /out/api \
 
 FROM node:24-bookworm-slim AS runtime
 ARG APP_VERSION=0.1.0
-LABEL org.opencontainers.image.title="Knowledge Map" \
+LABEL org.opencontainers.image.title="Curio Atlas" \
       org.opencontainers.image.version="$APP_VERSION"
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates python3 tini \
+ && apt-get install -y --no-install-recommends ca-certificates python3 python-is-python3 tini \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -24,7 +26,9 @@ COPY --from=builder /out/api ./apps/api
 COPY --from=builder /out/worker ./apps/worker
 COPY --from=builder /src/apps/web/.next/standalone/apps/web ./apps/web
 COPY --from=builder /src/infra ./infra
+COPY --from=builder /src/content ./content
 COPY --from=builder /src/tools/crawler ./tools/crawler
+COPY --from=builder /src/scripts/app-config.mjs ./scripts/app-config.mjs
 COPY --from=builder /src/scripts/serve-image.mjs ./scripts/serve-image.mjs
 RUN printf '%s' "$APP_VERSION" > /app/VERSION \
  && mkdir -p /app/config \

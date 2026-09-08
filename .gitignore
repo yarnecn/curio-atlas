@@ -7,7 +7,6 @@ coverage/
 
 # Local configuration and secrets
 .env*
-!.env.example
 config/app.config*.json
 !config/app.config.example.json
 
