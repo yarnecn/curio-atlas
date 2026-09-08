@@ -6,9 +6,10 @@ COPY . .
 RUN pnpm config set fetch-retries 5 \
  && pnpm config set fetch-timeout 120000 \
  && pnpm install --frozen-lockfile
-RUN pnpm --filter @knowledge-map/api build \
- && pnpm --filter @knowledge-map/worker build \
- && pnpm --filter @knowledge-map/web build
+RUN pnpm exec turbo run build \
+      --filter=@knowledge-map/api \
+      --filter=@knowledge-map/worker \
+      --filter=@knowledge-map/web
 RUN pnpm --offline --filter @knowledge-map/api deploy --prod --legacy /out/api \
  && pnpm --offline --filter @knowledge-map/worker deploy --prod --legacy /out/worker
 
