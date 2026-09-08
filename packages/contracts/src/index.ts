@@ -283,6 +283,9 @@ export interface ReviewSubmissionResponse {
   knowledgeNodeId: string | null;
 }
 
+export const KNOWLEDGE_CREATOR_KINDS = ['system', 'owner', 'contributor'] as const;
+export type KnowledgeCreatorKind = (typeof KNOWLEDGE_CREATOR_KINDS)[number];
+
 export interface KnowledgeNodeSummary {
   id: string;
   slug: string;
@@ -295,6 +298,9 @@ export interface KnowledgeNodeSummary {
   domainSlug: string;
   domainName: string;
   publishedAt: string | null;
+  creatorKind: KnowledgeCreatorKind;
+  creatorLabel: string;
+  creatorHandle: string | null;
 }
 
 export const KNOWLEDGE_RELATION_TYPES = [

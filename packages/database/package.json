@@ -16,20 +16,17 @@
     "lint": "eslint src",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run src --pool=threads --maxWorkers=1",
-    "migrate": "tsx src/migrate.ts up",
-    "rollback": "tsx src/migrate.ts down",
-    "seed": "tsx src/seed.ts",
     "content-status": "tsx src/content-status.ts",
-    "bootstrap-owner": "tsx src/bootstrap-owner.ts"
+    "initialize": "tsx src/initialize.ts",
+    "smoke:mysql": "tsx src/mysql-smoke.ts"
   },
   "dependencies": {
     "@knowledge-map/content-schema": "workspace:*",
     "@knowledge-map/contracts": "workspace:*",
     "@knowledge-map/domain": "workspace:*",
-    "pg": "8.16.3"
+    "mysql2": "3.24.3"
   },
   "devDependencies": {
-    "@types/pg": "8.15.5",
     "tsx": "4.23.13"
   }
 }

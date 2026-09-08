@@ -13,11 +13,11 @@ try {
     SELECT
       t.name,
       t.v1_target_count,
-      count(DISTINCT kn.id) FILTER (WHERE kn.status = 'published') AS published,
-      count(DISTINCT s.id) FILTER (WHERE s.status = 'queued_for_review') AS queued,
-      count(DISTINCT s.id) FILTER (
-        WHERE s.status = 'queued_for_review' AND s.current_revision_id IS NOT NULL
-      ) AS reviewable
+      count(DISTINCT CASE WHEN kn.status = 'published' THEN kn.id END) AS published,
+      count(DISTINCT CASE WHEN s.status = 'queued_for_review' THEN s.id END) AS queued,
+      count(DISTINCT CASE
+        WHEN s.status = 'queued_for_review' AND s.current_revision_id IS NOT NULL THEN s.id
+      END) AS reviewable
     FROM topics t
     LEFT JOIN knowledge_nodes kn ON kn.topic_id = t.id
     LEFT JOIN submissions s ON s.topic_id = t.id
