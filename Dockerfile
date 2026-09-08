@@ -10,8 +10,8 @@ RUN pnpm exec turbo run build \
       --filter=@knowledge-map/api \
       --filter=@knowledge-map/worker \
       --filter=@knowledge-map/web
-RUN pnpm --offline --filter @knowledge-map/api deploy --prod --legacy /out/api \
- && pnpm --offline --filter @knowledge-map/worker deploy --prod --legacy /out/worker
+RUN pnpm --filter @knowledge-map/api deploy --prod --legacy /out/api \
+ && pnpm --filter @knowledge-map/worker deploy --prod --legacy /out/worker
 
 FROM node:24-bookworm-slim AS runtime
 ARG APP_VERSION=0.1.0
