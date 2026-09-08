@@ -2,6 +2,7 @@
   "name": "@knowledge-map/worker",
   "version": "0.0.0",
   "private": true,
+  "files": ["dist"],
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "source:once": "tsx src/run-source-once.ts",

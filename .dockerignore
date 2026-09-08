@@ -7,8 +7,14 @@
 **/dist
 **/node_modules
 node_modules
+.pnpm-store
 coverage
 *.log
 .env*
 config/app.config*.json
 !config/app.config.example.json
+**/__pycache__
+**/*.pyc
+**/test_*.py
+docs
+个人百科网站完整方案.md

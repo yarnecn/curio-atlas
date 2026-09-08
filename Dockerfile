@@ -10,6 +10,7 @@ RUN pnpm exec turbo run build \
       --filter=@knowledge-map/api \
       --filter=@knowledge-map/worker \
       --filter=@knowledge-map/web
+RUN find apps/api/dist apps/worker/dist packages -type f -name '*.map' -delete
 RUN pnpm --filter @knowledge-map/api deploy --prod --legacy /out/api \
  && pnpm --filter @knowledge-map/worker deploy --prod --legacy /out/worker
 
@@ -23,17 +24,17 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY --from=builder /out/api ./apps/api
-COPY --from=builder /out/worker ./apps/worker
-COPY --from=builder /src/apps/web/.next/standalone/apps/web ./apps/web
-COPY --from=builder /src/infra ./infra
-COPY --from=builder /src/content ./content
-COPY --from=builder /src/tools/crawler ./tools/crawler
-COPY --from=builder /src/scripts/app-config.mjs ./scripts/app-config.mjs
-COPY --from=builder /src/scripts/serve-image.mjs ./scripts/serve-image.mjs
+COPY --from=builder --chown=node:node /out/api ./apps/api
+COPY --from=builder --chown=node:node /out/worker ./apps/worker
+COPY --from=builder --chown=node:node /src/apps/web/.next/standalone/apps/web ./apps/web
+COPY --from=builder --chown=node:node /src/infra ./infra
+COPY --from=builder --chown=node:node /src/content ./content
+COPY --from=builder --chown=node:node /src/tools/crawler/fetch_source.py ./tools/crawler/fetch_source.py
+COPY --from=builder --chown=node:node /src/scripts/app-config.mjs ./scripts/app-config.mjs
+COPY --from=builder --chown=node:node /src/scripts/serve-image.mjs ./scripts/serve-image.mjs
 RUN printf '%s' "$APP_VERSION" > /app/VERSION \
  && mkdir -p /app/config \
- && chown -R node:node /app
+ && chown node:node /app/VERSION /app/config
 
 USER node
 EXPOSE 8080
