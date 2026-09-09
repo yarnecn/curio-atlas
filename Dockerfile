@@ -10,6 +10,8 @@ RUN pnpm exec turbo run build \
       --filter=@knowledge-map/api \
       --filter=@knowledge-map/worker \
       --filter=@knowledge-map/web
+RUN test -f apps/web/.next/standalone/apps/web/server.js \
+ && test -f apps/web/.next/standalone/node_modules/next/package.json
 RUN find apps/api/dist apps/worker/dist packages -type f -name '*.map' -delete
 RUN pnpm --filter @knowledge-map/api deploy --prod --legacy /out/api \
  && pnpm --filter @knowledge-map/worker deploy --prod --legacy /out/worker \
