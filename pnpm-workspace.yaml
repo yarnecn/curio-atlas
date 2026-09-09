@@ -21,6 +21,7 @@ ignoredOptionalDependencies:
   - pg
 
 overrides:
+  multer: 2.3.0
   minipass: 7.1.2
   serialize-javascript: 7.1.1
   swiper: 12.2.0
