@@ -21,6 +21,10 @@ RUN pnpm --filter @knowledge-map/api deploy --prod --legacy /out/api \
         cp "/src/packages/$pkg/package.json" "/out/$app/node_modules/@knowledge-map/$pkg/package.json"; \
       done; \
     done
+RUN test -f /out/api/node_modules/mysql2/index.js \
+ && test -f /out/api/node_modules/zod/index.js \
+ && test -f /out/worker/node_modules/mysql2/index.js \
+ && test -f /out/worker/node_modules/zod/index.js
 
 FROM node:24-bookworm-slim AS runtime
 ARG APP_VERSION=0.1.0
