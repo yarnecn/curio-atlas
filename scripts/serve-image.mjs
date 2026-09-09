@@ -30,6 +30,7 @@ const appVersion = readAppVersion();
 const internalApiPort = 4000;
 const internalWebPort = 3000;
 const configOrigin = parsedPublicUrl.origin;
+let gateway = null;
 
 Object.assign(process.env, {
   NODE_ENV: 'production',
@@ -119,7 +120,7 @@ await Promise.all([
 ]);
 
 const listenPort = integer('server.port', config.server?.port, 1, 65535);
-const gateway = createServer((incoming, outgoing) => {
+gateway = createServer((incoming, outgoing) => {
   if (incoming.url === '/healthz') {
     outgoing.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
     outgoing.end(JSON.stringify({ status: 'ok', version: appVersion }));
@@ -148,7 +149,7 @@ gateway.listen(listenPort, '0.0.0.0', () => {
 async function shutdown(exitCode = 0) {
   if (shuttingDown) return;
   shuttingDown = true;
-  await new Promise((resolvePromise) => gateway.close(resolvePromise));
+  if (gateway) await new Promise((resolvePromise) => gateway.close(resolvePromise));
   for (const child of children) child.kill('SIGTERM');
   setTimeout(() => process.exit(exitCode), 5_000).unref();
   await Promise.all(children.map((child) => new Promise((resolvePromise) => child.once('exit', resolvePromise))));

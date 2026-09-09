@@ -39,6 +39,7 @@ WORKDIR /app
 COPY --from=builder --chown=node:node /out/api ./apps/api
 COPY --from=builder --chown=node:node /out/worker ./apps/worker
 COPY --from=builder --chown=node:node /src/apps/web/.next/standalone/apps/web ./apps/web
+COPY --from=builder --chown=node:node /src/apps/web/.next/standalone/node_modules ./apps/web/node_modules
 COPY --from=builder --chown=node:node /src/infra ./infra
 COPY --from=builder --chown=node:node /src/content ./content
 COPY --from=builder --chown=node:node /src/packages/database/dist ./packages/database/dist
