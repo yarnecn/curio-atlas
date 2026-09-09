@@ -12,7 +12,13 @@ RUN pnpm exec turbo run build \
       --filter=@knowledge-map/web
 RUN find apps/api/dist apps/worker/dist packages -type f -name '*.map' -delete
 RUN pnpm --filter @knowledge-map/api deploy --prod --legacy /out/api \
- && pnpm --filter @knowledge-map/worker deploy --prod --legacy /out/worker
+ && pnpm --filter @knowledge-map/worker deploy --prod --legacy /out/worker \
+ && for app in api worker; do \
+      for pkg in content-schema contracts database domain; do \
+        mkdir -p "/out/$app/node_modules/@knowledge-map/$pkg/dist"; \
+        cp -a "/src/packages/$pkg/dist/." "/out/$app/node_modules/@knowledge-map/$pkg/dist/"; \
+      done; \
+    done
 
 FROM node:24-bookworm-slim AS runtime
 ARG APP_VERSION=0.1.0
