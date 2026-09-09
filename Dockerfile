@@ -15,8 +15,10 @@ RUN pnpm --filter @knowledge-map/api deploy --prod --legacy /out/api \
  && pnpm --filter @knowledge-map/worker deploy --prod --legacy /out/worker \
  && for app in api worker; do \
       for pkg in content-schema contracts database domain; do \
+        rm -rf "/out/$app/node_modules/@knowledge-map/$pkg"; \
         mkdir -p "/out/$app/node_modules/@knowledge-map/$pkg/dist"; \
         cp -a "/src/packages/$pkg/dist/." "/out/$app/node_modules/@knowledge-map/$pkg/dist/"; \
+        cp "/src/packages/$pkg/package.json" "/out/$app/node_modules/@knowledge-map/$pkg/package.json"; \
       done; \
     done
 
@@ -35,6 +37,7 @@ COPY --from=builder --chown=node:node /out/worker ./apps/worker
 COPY --from=builder --chown=node:node /src/apps/web/.next/standalone/apps/web ./apps/web
 COPY --from=builder --chown=node:node /src/infra ./infra
 COPY --from=builder --chown=node:node /src/content ./content
+COPY --from=builder --chown=node:node /src/packages/database/dist ./packages/database/dist
 COPY --from=builder --chown=node:node /src/tools/crawler/fetch_source.py ./tools/crawler/fetch_source.py
 COPY --from=builder --chown=node:node /src/scripts/app-config.mjs ./scripts/app-config.mjs
 COPY --from=builder --chown=node:node /src/scripts/serve-image.mjs ./scripts/serve-image.mjs
