@@ -42,7 +42,7 @@ RUN apt-get update \
 WORKDIR /app
 COPY --from=builder --chown=node:node /out/api ./apps/api
 COPY --from=builder --chown=node:node /out/worker ./apps/worker
-COPY --from=builder --chown=node:node /out/web ./apps/web
+COPY --from=builder --chown=node:node /out/web/node_modules ./apps/web/node_modules
 COPY --from=builder --chown=node:node /src/apps/web/.next/standalone ./apps/web/.next/standalone
 COPY --from=builder --chown=node:node /src/infra ./infra
 COPY --from=builder --chown=node:node /src/content ./content
