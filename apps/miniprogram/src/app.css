@@ -4,3 +4,25 @@ page {
   font-family: sans-serif;
 }
 
+button { margin: 0; }
+.page { min-height: 100vh; box-sizing: border-box; padding: 36px 30px 70px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 34px; }
+.brand { color: #17211b; font-size: 34px; font-weight: 700; }
+.app-version { display: block; margin-top: 4px; color: #89928a; font-size: 18px; }
+.top-actions { display: flex; gap: 12px; }
+.link-button { color: #2e7255; background: transparent; border: 0; font-size: 25px; padding: 8px 0; }
+.eyebrow { display: block; color: #2e7255; font-size: 22px; font-weight: 700; letter-spacing: 4px; }
+.page-title { display: block; margin-top: 12px; color: #17211b; font-family: serif; font-size: 64px; font-weight: 700; line-height: 1.15; }
+.intro { display: block; margin: 16px 0 28px; color: #58645c; font-size: 27px; line-height: 1.7; }
+.message { display: block; margin: 18px 0; border-left: 5px solid #b65b3a; background: #f8e9df; padding: 16px 18px; color: #71351f; font-size: 25px; line-height: 1.5; }
+.empty { display: block; padding: 48px 10px; color: #7a847d; font-size: 28px; text-align: center; }
+.primary-button { border: 0; border-radius: 12px; background: #2e7255; color: #fff; font-size: 27px; line-height: 1.4; padding: 16px 22px; }
+.secondary-button { border: 1px solid #b5c4b7; border-radius: 12px; background: #fff; color: #2e7255; font-size: 26px; line-height: 1.4; padding: 14px 20px; }
+.secondary-button.selected { border-color: #2e7255; background: #e7f1e9; }
+.form-card { display: grid; gap: 20px; border: 1px solid #d7d0c3; border-radius: 16px; background: #fff; padding: 26px; }
+.field { display: grid; gap: 10px; color: #435247; font-size: 25px; }
+.input, .textarea, .select { box-sizing: border-box; width: 100%; border: 1px solid #c9c3b7; border-radius: 10px; background: #fff; padding: 15px; color: #17211b; font-size: 27px; }
+.textarea { min-height: 180px; }
+.subtle { color: #778179; font-size: 23px; line-height: 1.6; }
+.section-heading { display: block; margin-top: 14px; color: #435247; font-size: 25px; font-weight: 700; }
+.paragraph { display: block; margin-top: 8px; color: #435047; font-size: 27px; line-height: 1.75; }

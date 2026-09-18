@@ -4,18 +4,18 @@
 
 ## 当前状态
 
-- 阶段：Phase 1 工程收口中。内容内核、昵称账号、投稿候选、评分、人工审核、发布、版本、回滚和相关常识连续阅读已经实现；MySQL 真实业务烟测通过后才能封板。
+- 阶段：生产环境已部署；Web 进入 Phase 2（浏览优先的网站完善与内容供给优化）。Phase 1 的工程主线已完成，仍需补做真实 MySQL 烟测、备份恢复和首版内容验收后，才能称为完全封板。小程序先保持独立适配，不作为 Web Phase 2 的阻塞项。
 - 技术：TypeScript monorepo、Next.js 网站、NestJS API、NestJS worker、Taro 微信小程序、MySQL 8.4、Redis/BullMQ。
-- 统一入口：`http://localhost:8080`；运行命令只有 `npm start`。
+- 统一入口：`http://localhost:8080`；运行命令为 `pnpm start`。
 - 生产交付是单个 `curio-atlas:<版本>` 镜像；Web、API、worker 和 Python 均在镜像内，对外只开放 8080。全部用户配置来自挂载的 `config/app.config.json`。
 - 正式内容接口 `/knowledge` 返回完整短文 sections，不要只渲染 summary。
 - V1 目录已经确定为 12 个一级领域、48 个细分话题和 165 个题目；空库只初始化 20 篇 starter 常识，不自动导入旧 PostgreSQL 候选。
-- 20 篇 starter 只是流程与页面样例，不等于站长已按 V1 标准验收；准确数量用 `npm run content:status` 查询，其余 145 个题目仍需按来源生产和审核。
+- 20 篇 starter 只是流程与页面样例，不等于站长已按 V1 标准验收；准确数量用 `pnpm content:status` 查询，其余 145 个题目仍需按来源生产和审核。
 - 浏览保持匿名；投稿和评分需要昵称账号；审核后台只允许 `reviewer` / `owner`。服务端使用 HttpOnly 会话 Cookie，旧的 `x-user-id` 开发直通已移除。
 - 首次启动会从 `config/app.config.json` 初始化站长密码；仓库不提供默认密码，重复启动不会重置已有密码。
 - `/admin/operations` 可动态新增、停用领域和话题，管理白名单来源，并选择规则、本地 Ollama 或 OpenAI 兼容 AI 模式。密钥只从挂载配置的 `ai.apiKey` 读取。
 - Python 支持指定单页手动抓取，以及从指定 HTTPS 站点入口发现最多 20 个同源同路径页面；自动维护由来源自身开关与全局配置共同控制。
-- 管理台“立即抓取”会通过队列唤醒 worker；源码维护人员仍可用 `npm run source:once` 执行整批到期来源。具体步骤见 `docs/operations/bulk-source-run.md`。
+- 管理台“立即抓取”会通过队列唤醒 worker；源码维护人员仍可用 `pnpm source:once` 执行整批到期来源。具体步骤见 `docs/operations/bulk-source-run.md`。
 
 ## 必读顺序
 
@@ -54,12 +54,12 @@
 
 ## 接续工作方式
 
-先运行 `npm run check`。如果只改页面，至少运行对应 app 的 lint、typecheck 和 build；如果改数据库，直接同步更新 `infra/mysql/schema.sql`、幂等初始化逻辑、仓储查询和 MySQL 业务烟测，并更新 `docs/product/phase-1-implementation.md`。
+先运行 `pnpm check`。如果只改页面，至少运行对应 app 的 lint、typecheck 和 build；如果改数据库，直接同步更新 `infra/mysql/schema.sql`、幂等初始化逻辑、仓储查询和 MySQL 业务烟测，并更新 `docs/product/phase-1-implementation.md`。
 
-应用从 MySQL 空库开始，不维护 PostgreSQL 兼容层，也没有迁移、回滚、单独 seed 或单独站长初始化命令。`npm start` 会先执行幂等的建库、建表、首版数据和站长检查，再启动全部服务。镜像只用 `npm run image:build` 构建。
+应用从 MySQL 空库开始，不维护 PostgreSQL 兼容层，也没有迁移、回滚、单独 seed 或单独站长初始化命令。`pnpm start` 会先执行幂等的建库、建表、首版数据和站长检查，再启动全部服务。镜像只用 `pnpm image:build` 构建。
 
 任何新功能先回答三个问题：它服务哪条用户闭环？是否会把实时信息、候选精华和正式常识混在一起？是否增加了站长无法维护的人工负担？没有明确答案时不要扩展代码。
 
 ## 当前明确未完成
 
-找回密码、管理员多因素认证、限流、封禁/注销、剩余 145 条 V1 内容、主动寻找新来源、已读去重、公开搜索、完整小程序业务页和商业化运营仍是后续阶段。现有抓取只处理站长加入的白名单页面或有页数上限的同站目录，不是无边界全网搜索。
+找回密码、管理员多因素认证、限流、封禁/注销、剩余 145 条 V1 内容、主动寻找新来源、完整搜索和商业化运营仍是后续阶段。Web 已提供浏览器本地已读和关键词兜底搜索；小程序已有首个阅读切片，但完整的小程序交互、真机适配和发布配置延后单独处理。现有抓取只处理站长加入的白名单页面或有页数上限的同站目录，不是无边界全网搜索。

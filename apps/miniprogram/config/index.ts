@@ -2,7 +2,10 @@ import { defineConfig, type UserConfigExport } from '@tarojs/cli';
 import devConfig from './dev';
 import prodConfig from './prod';
 
-export default defineConfig(async (merge, { mode }) => {
+export default defineConfig(async (
+  merge: (...configs: Array<object | null | undefined>) => object,
+  { mode }: { mode: string },
+) => {
   const baseConfig: UserConfigExport = {
     projectName: 'knowledge-map',
     date: '2026-09-02',
@@ -14,7 +17,9 @@ export default defineConfig(async (merge, { mode }) => {
     compiler: { type: 'webpack5', prebundle: { enable: false } },
     cache: { enable: false },
     plugins: [],
-    defineConstants: {},
+    defineConstants: {
+      __APP_VERSION__: JSON.stringify(process.env.APP_VERSION ?? 'development'),
+    },
     copy: { patterns: [], options: {} },
     mini: {
       postcss: {

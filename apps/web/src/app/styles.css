@@ -146,7 +146,8 @@ textarea { resize: vertical; }
 .site-header .admin-link { color: var(--color-blue); }
 .nav-button { border: 0; background: transparent; color: #4d5951; padding: 0; font: inherit; }
 .account-state { color: #7b847e; }
-.wordmark { color: var(--color-ink) !important; font-size: 1.2rem; font-weight: 700; }
+.wordmark { display: inline-flex; align-items: center; gap: 0.55rem; color: var(--color-ink) !important; font-size: 1.2rem; font-weight: 700; }
+.brand-logo { width: 2.25rem; height: 2.25rem; border-radius: 0.65rem; object-fit: cover; }
 .discovery-intro {
   display: flex;
   align-items: flex-end;
@@ -158,6 +159,8 @@ textarea { resize: vertical; }
 .discovery-intro > p { margin: 0 0 0.45rem; color: #657169; font: 550 0.88rem/1.5 ui-sans-serif, system-ui; }
 .discovery-toolbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
 .discovery-filters { display: grid; gap: 0.65rem; }
+.discovery-search { display: block; width: min(32rem, 100%); }
+.discovery-search input { min-height: 2.5rem; border-radius: 999px; background: #fff; padding-inline: 1rem; }
 .topic-tabs, .creator-tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .topic-tabs button, .creator-tabs button, .rotate-button {
   min-height: 2.25rem;
@@ -171,6 +174,9 @@ textarea { resize: vertical; }
 .topic-tabs button[aria-selected='true'] { border-color: var(--color-ink); background: var(--color-ink); color: #fff; }
 .creator-tabs button { min-height: 1.9rem; border-radius: 999px; padding: 0.3rem 0.65rem; color: #657169; font-size: 0.75rem; }
 .creator-tabs button[aria-selected='true'] { border-color: var(--color-leaf); background: #e9f1eb; color: #24402d; }
+.discovery-actions { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 0.55rem; }
+.read-progress, .clear-read-button { color: #657169; font: 600 0.75rem/1.2 ui-sans-serif, system-ui; }
+.clear-read-button { border: 0; background: transparent; padding: 0.4rem; text-decoration: underline; text-underline-offset: 0.2em; }
 .rotate-button { flex: 0 0 auto; border-color: var(--color-rust); color: var(--color-rust); }
 .knowledge-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; margin: 0 auto; gap: 1rem; align-items: start; }
 .knowledge-card {
@@ -258,6 +264,7 @@ button.creator-mark:hover, button.creator-mark[aria-pressed='true'] { border-col
 .version-row h2 { margin: 0.35rem 0; font-size: 1.15rem; line-height: 1.5; }
 .version-row p { margin: 0; color: #657169; font: 500 0.82rem/1.5 ui-sans-serif, system-ui; }
 .version-row .version-number { color: var(--color-leaf); font-weight: 700; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 
 @media (max-width: 720px) {
   main { padding-top: 2rem; }
@@ -273,6 +280,7 @@ button.creator-mark:hover, button.creator-mark[aria-pressed='true'] { border-col
   .discovery-intro { align-items: flex-start; flex-direction: column; gap: 0.5rem; padding-top: 2.5rem; }
   .discovery-intro h1 { font-size: 2.75rem; }
   .discovery-toolbar { align-items: stretch; flex-direction: column; }
+  .discovery-actions { justify-content: flex-end; }
   .rotate-button { align-self: flex-end; }
   .knowledge-grid { grid-template-columns: 1fr; }
   .compact-header h1 { font-size: 2.5rem; }

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { use, useEffect, useState } from 'react';
 
 const api = createApiClient({ baseUrl: '/api' });
+const READ_STORAGE_KEY = 'curio-atlas-read-knowledge';
 const relationLabels: Record<KnowledgeRelationType, string> = {
   prerequisite_of: '先了解', part_of: '属于同一体系', causes: '可能导致', influences: '相互影响',
   contrasts_with: '对照理解', located_in: '空间相关', occurred_during: '同一时期', succeeded_by: '前后相接',
@@ -23,6 +24,17 @@ export default function KnowledgeDetailPage({ params }: { params: Promise<{ slug
       setMessage(error instanceof Error ? error.message : '常识加载失败。');
     });
   }, [slug]);
+
+  useEffect(() => {
+    if (!node) return;
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(READ_STORAGE_KEY) ?? '[]') as unknown;
+      const readIds = Array.isArray(stored) ? stored.filter((id): id is string => typeof id === 'string') : [];
+      if (!readIds.includes(node.id)) window.localStorage.setItem(READ_STORAGE_KEY, JSON.stringify([...readIds, node.id]));
+    } catch {
+      // A broken local preference must never prevent reading a public article.
+    }
+  }, [node]);
 
   if (message) return <main className="page-shell"><p className="form-message">{message}</p><Link href="/">返回首页</Link></main>;
   if (!node) return <main className="page-shell"><p>正在读取…</p></main>;

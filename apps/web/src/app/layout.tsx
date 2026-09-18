@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 export const metadata: Metadata = {
   title: '常识地图',
   description: '打开即看的主动推荐型常识百科。',
+  icons: { icon: '/curio-atlas-logo.png' },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

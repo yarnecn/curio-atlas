@@ -1,0 +1,4 @@
+.submission-list { display: grid; gap: 18px; }
+.submission-card { display: grid; gap: 14px; border: 1px solid #d7d0c3; border-radius: 16px; background: #fff; padding: 22px; }
+.submission-title { color: #17211b; font-family: serif; font-size: 34px; font-weight: 700; line-height: 1.4; }
+.vote-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }

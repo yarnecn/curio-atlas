@@ -92,9 +92,9 @@ importers:
 
   apps/miniprogram:
     dependencies:
-      '@knowledge-map/design-tokens':
+      '@knowledge-map/contracts':
         specifier: workspace:*
-        version: link:../../packages/design-tokens
+        version: link:../../packages/contracts
       '@tarojs/components':
         specifier: 4.1.11
         version: 4.1.11(@tarojs/helper@4.1.11(@swc/helpers@0.5.23)(supports-color@8.1.1))(@types/react@18.3.27)(html-webpack-plugin@5.6.8(webpack@5.91.0(@swc/core@1.3.96(@swc/helpers@0.5.23))(esbuild@0.21.5)(uglify-js@3.19.3)))(postcss@8.5.26)(rollup@3.30.0)(webpack-chain@6.5.1)(webpack-dev-server@4.15.2(debug@4.4.3(supports-color@8.1.1))(supports-color@8.1.1)(webpack@5.91.0(@swc/core@1.3.96(@swc/helpers@0.5.23))(esbuild@0.21.5)(uglify-js@3.19.3)))(webpack@5.91.0(@swc/core@1.3.96(@swc/helpers@0.5.23))(esbuild@0.21.5)(uglify-js@3.19.3))

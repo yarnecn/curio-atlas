@@ -15,6 +15,7 @@ const api = createApiClient({
   baseUrl: '/api',
 });
 const PAGE_SIZE = 12;
+const READ_STORAGE_KEY = 'curio-atlas-read-knowledge';
 type CreatorFilter = 'all' | KnowledgeCreatorKind;
 const creatorFilters: { value: CreatorFilter; label: string }[] = [
   { value: 'all', label: '全部来源' },
@@ -70,7 +71,18 @@ export default function Home() {
   const [domain, setDomain] = useState('全部');
   const [creator, setCreator] = useState<CreatorFilter>('all');
   const [batch, setBatch] = useState(0);
+  const [search, setSearch] = useState('');
+  const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(READ_STORAGE_KEY) ?? '[]') as unknown;
+      if (Array.isArray(stored)) setReadIds(new Set(stored.filter((id): id is string => typeof id === 'string')));
+    } catch {
+      // A broken local preference must never prevent the public reading flow.
+    }
+  }, []);
 
   useEffect(() => {
     Promise.all([api.knowledgeNodes(), api.topics()])
@@ -88,10 +100,15 @@ export default function Home() {
   const matchingNodes = nodes.filter((node) => (
     (domain === '全部' || node.domainName === domain)
     && (creator === 'all' || node.creatorKind === creator)
+    && (!search.trim() || [node.title, node.summary, node.topicName, node.domainName]
+      .some((value) => value.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())))
   ));
+  const unreadNodes = matchingNodes.filter((node) => !readIds.has(node.id));
+  const browsePool = unreadNodes.length > 0 ? [...unreadNodes, ...matchingNodes.filter((node) => readIds.has(node.id))] : matchingNodes;
   const visibleNodes = domain === '全部'
-    ? proportionalItems(matchingNodes, batch)
-    : rotateItems(matchingNodes, batch * PAGE_SIZE);
+    ? proportionalItems(browsePool, batch)
+    : rotateItems(browsePool, batch * PAGE_SIZE);
+  const visibleReadCount = nodes.filter((node) => readIds.has(node.id)).length;
 
   function selectDomain(nextDomain: string) {
     setDomain(nextDomain);
@@ -103,6 +120,20 @@ export default function Home() {
     setBatch(0);
   }
 
+  function markRead(id: string) {
+    setReadIds((current) => {
+      const next = new Set(current);
+      next.add(id);
+      try { window.localStorage.setItem(READ_STORAGE_KEY, JSON.stringify([...next])); } catch { /* best effort */ }
+      return next;
+    });
+  }
+
+  function clearRead() {
+    setReadIds(new Set());
+    try { window.localStorage.removeItem(READ_STORAGE_KEY); } catch { /* best effort */ }
+  }
+
   function rotate() {
     setBatch((current) => matchingNodes.length === 0 ? 0 : current + 1);
   }
@@ -110,7 +141,10 @@ export default function Home() {
   return (
     <main className="discovery-shell">
       <header className="site-header">
-        <Link className="wordmark" href="/">{PRODUCT_NAME}</Link>
+        <Link className="wordmark" href="/">
+          <img className="brand-logo" src="/curio-atlas-logo.png" alt="" aria-hidden="true" />
+          <span>{PRODUCT_NAME}</span>
+        </Link>
         <nav aria-label="主要导航">
           <Link aria-current="page" href="/">发现</Link>
           <Link href="/submissions">候选</Link>
@@ -129,6 +163,16 @@ export default function Home() {
 
       <div className="discovery-toolbar">
         <div className="discovery-filters">
+          <label className="discovery-search">
+            <span className="sr-only">搜索常识</span>
+            <input
+              aria-label="搜索常识"
+              onChange={(event) => { setSearch(event.target.value); setBatch(0); }}
+              placeholder="不记得分类？搜标题或关键词"
+              type="search"
+              value={search}
+            />
+          </label>
           <div className="topic-tabs" role="tablist" aria-label="按知识领域筛选">
             {domains.map((item) => (
               <button
@@ -156,7 +200,11 @@ export default function Home() {
             ))}
           </div>
         </div>
-        <button className="rotate-button" onClick={rotate} type="button">换一批</button>
+        <div className="discovery-actions">
+          <span className="read-progress">已读 {visibleReadCount} / {nodes.length}</span>
+          {visibleReadCount > 0 && <button className="clear-read-button" onClick={clearRead} type="button">清除已读</button>}
+          <button className="rotate-button" onClick={rotate} type="button" disabled={matchingNodes.length === 0}>换一批</button>
+        </div>
       </div>
 
       {message && <p className="form-message" role="status">{message}</p>}
@@ -177,7 +225,7 @@ export default function Home() {
             >
               {node.creatorLabel}{node.creatorKind === 'contributor' && node.creatorHandle ? ` · ${node.creatorHandle}` : ''}
             </button>
-            <h2><Link href={`/knowledge/${node.slug}`}>{node.title}</Link></h2>
+            <h2><Link href={`/knowledge/${node.slug}`} onClick={() => markRead(node.id)}>{node.title}</Link></h2>
             <div className="knowledge-body">
               {node.sections.map((section, index) => (
                 <section className="knowledge-section" key={`${section.heading ?? '核心内容'}-${index}`}>

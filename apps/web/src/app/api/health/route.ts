@@ -5,9 +5,8 @@ export function GET() {
   const health: HealthResponse = {
     service: 'web',
     status: 'ok',
-    version: '0.0.0',
+    version: process.env.APP_VERSION ?? 'development',
     timestamp: new Date().toISOString(),
   };
   return NextResponse.json(health);
 }
-

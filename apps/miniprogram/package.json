@@ -10,7 +10,7 @@
     "test": "vitest run --pool=threads --maxWorkers=1 --passWithNoTests"
   },
   "dependencies": {
-    "@knowledge-map/design-tokens": "workspace:*",
+    "@knowledge-map/contracts": "workspace:*",
     "@tarojs/components": "4.1.11",
     "@tarojs/helper": "4.1.11",
     "@tarojs/plugin-framework-react": "4.1.11",
