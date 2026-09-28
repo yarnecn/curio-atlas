@@ -1,0 +1,5 @@
+.compact-list { display: flex; flex-direction: column; gap: 20px; }
+.compact-card { border-radius: 16px; background: #fff; padding: 24px; }
+.compact-title { display: block; font-size: 34px; font-weight: 700; }
+.compact-summary { display: block; margin-top: 14px; color: #536057; font-size: 27px; line-height: 1.65; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; }

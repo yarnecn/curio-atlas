@@ -5,6 +5,7 @@
 **/.next
 **/.turbo
 **/dist
+**/dist-release
 **/node_modules
 node_modules
 .pnpm-store

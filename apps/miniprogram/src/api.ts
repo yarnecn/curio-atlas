@@ -46,6 +46,11 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 
 export const miniApi = {
   authState: () => request<AuthStateView>('/auth/me'),
+  logout: async () => {
+    const state = await request<AuthStateView>('/auth/logout', { method: 'POST' });
+    Taro.removeStorageSync(SESSION_COOKIE_KEY);
+    return state;
+  },
   login: (publicHandle: string, password: string) => request<AuthStateView>('/auth/login', { method: 'POST', data: { publicHandle, password } }),
   register: (input: { publicHandle: string; displayName?: string; password: string }) => request<AuthStateView>('/auth/register', { method: 'POST', data: input }),
   topics: () => request<TopicSummary[]>('/topics'),

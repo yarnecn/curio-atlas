@@ -3,6 +3,7 @@ import Taro, { useRouter } from '@tarojs/taro';
 import type { KnowledgeNodeDetail } from '@knowledge-map/contracts';
 import { useEffect, useState } from 'react';
 import { messageOf, miniApi } from '../../api';
+import { readIds, FAVORITES_KEY, READ_KEY } from '../../storage';
 import './index.css';
 
 export default function KnowledgePage() {
@@ -14,13 +15,16 @@ export default function KnowledgePage() {
   useEffect(() => {
     const slug = params.slug;
     if (!slug) { setMessage('缺少常识地址。'); return; }
-    const saved = Taro.getStorageSync<string[]>('curio-favorites') ?? [];
-    miniApi.knowledgeNode(slug).then((value) => { setNode(value); setFavorite(saved.includes(value.id)); }).catch((error) => setMessage(messageOf(error, '常识读取失败。')));
+    const saved = readIds(FAVORITES_KEY);
+    miniApi.knowledgeNode(slug).then((value) => {
+      setNode(value); setFavorite(saved.includes(value.id));
+      Taro.setStorageSync(READ_KEY, Array.from(new Set([...readIds(READ_KEY), value.id])));
+    }).catch((error) => setMessage(messageOf(error, '常识读取失败。')));
   }, [params.slug]);
 
   function toggleFavorite() {
     if (!node) return;
-    const saved = Taro.getStorageSync<string[]>('curio-favorites') ?? [];
+    const saved = readIds(FAVORITES_KEY);
     const next = favorite ? saved.filter((id) => id !== node.id) : [...saved, node.id];
     Taro.setStorageSync('curio-favorites', next); setFavorite(!favorite);
   }

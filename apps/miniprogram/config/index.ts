@@ -12,7 +12,8 @@ export default defineConfig(async (
     designWidth: 750,
     deviceRatio: { 750: 1 },
     sourceRoot: 'src',
-    outputRoot: 'dist',
+    // Keep release builds from overwriting files owned by an active dev watcher.
+    outputRoot: mode === 'production' ? 'dist-release' : 'dist',
     framework: 'react',
     compiler: { type: 'webpack5', prebundle: { enable: false } },
     cache: { enable: false },

@@ -1,4 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: '今天',
+  navigationBarTitleText: '看看',
 });
-

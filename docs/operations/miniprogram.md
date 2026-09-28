@@ -1,12 +1,13 @@
 # 微信小程序首版
 
-小程序代码位于 `apps/miniprogram`，和网站共用同一套 API、账号、话题、常识和投稿审核流程，不单独维护一份数据。它不要求复制网站的页面结构或信息密度；Web Phase 2 期间小程序只保持技术可运行，完整交互等 Web 内容结构稳定后再单独设计。
+小程序代码位于 `apps/miniprogram`，和网站共用 API、账号和内容，采用独立的“看看、收藏、我的”底部导航。
 
 ## 本版已实现
 
-- 随便看看：按领域、创建来源筛选，换一批一次换整组内容。
+- 看看：按领域浏览；点击卡片创建来源标记筛选，再点清除恢复。超过 8 条时可换一批，批次可能有重叠。
 - 常识详情：完整正文、阅读时长、来源标记、收藏、相关常识跳转。
-- 收藏：本地保存，可在首页切换到“我的收藏”。
+- 收藏：独立底部入口，本机保存、无需登录，可查看和取消收藏；不会跨设备同步。
+- 我的：登录、注册、退出登录、投稿和尝试池入口；版本号只放在这里。
 - 登录/注册：使用昵称账号，不要求实名；阅读不登录也能用。
 - 投稿：登录后直接提交精华内容，沿用服务端的 AI 预处理和人工审核。
 - 尝试池：查看候选内容并点“有用/没用”，评分仍走服务端权限和去重规则。
@@ -20,7 +21,7 @@ pnpm install
 pnpm --filter @knowledge-map/miniprogram dev
 ```
 
-然后用微信开发者工具打开 `apps/miniprogram/dist`。开发者工具中可勾选“不校验合法域名、web-view（业务域名）、TLS 版本以及 HTTPS 证书”，本地调试才可以请求 `127.0.0.1`。
+另开终端在仓库根目录执行 `pnpm start`，启动本地 API。然后用微信开发者工具打开 `apps/miniprogram`（项目配置的 `miniprogramRoot` 为 `dist/`）。开发者工具中可勾选“不校验合法域名、web-view（业务域名）、TLS 版本以及 HTTPS 证书”。小程序编译命令不会启动 API；使用线上 API 时无需启动本地服务。
 
 如果电脑没有全局 `pnpm`，使用项目已有的 pnpm 命令路径，或先通过 Corepack 启用 pnpm。
 
@@ -45,6 +46,10 @@ pnpm --filter @knowledge-map/miniprogram build
 Docker 镜像发布时使用相同版本作为 `--build-arg APP_VERSION`。开发环境未设置时，小程序显示 `development`，服务端健康检查也显示 `development`。
 
 ## 真机/发布前检查
+
+开发命令输出 `apps/miniprogram/dist`，发布构建输出 `apps/miniprogram/dist-release`，避免发布构建覆盖正在运行的开发 watcher。发布时在微信开发者工具中单独导入 `dist-release` 目录；日常开发仍打开 `apps/miniprogram`。
+
+构建后可执行 `node scripts/check-miniprogram-runtime.mjs` 检查开发产物，或 `node scripts/check-miniprogram-runtime.mjs apps/miniprogram/dist-release` 检查发布产物。检查涵盖应用注册、三个 Tab 页面多次显示与正文生成；模拟微信宿主，不替代真机验收。运行异常在控制台以 `[mini-runtime]` 标记。
 
 1. Caddy 或其他网关已将域名转发到应用容器的 8080 端口。
 2. 微信公众平台已配置 HTTPS request 合法域名。
