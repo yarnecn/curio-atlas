@@ -11,7 +11,8 @@ import type {
 } from '@knowledge-map/contracts';
 
 // 真机预览或正式发布前，将这里改为已备案的 HTTPS API 地址。
-export const API_BASE_URL = 'http://127.0.0.1:8080/api';
+//export const API_BASE_URL = 'http://127.0.0.1:8080/api';
+export const API_BASE_URL = 'https://atlas.yarne.cc/api';
 
 type RequestOptions = Omit<Taro.request.Option, 'url'>;
 const SESSION_COOKIE_KEY = 'curio-session-cookie';
