@@ -8,8 +8,9 @@ import {
   type TopicSummary,
 } from '@knowledge-map/contracts';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { AccountNav } from '../components/account-nav';
+import { TrialCard } from '../components/trial-card';
 
 const api = createApiClient({
   baseUrl: '/api',
@@ -135,7 +136,7 @@ export default function Home() {
   }
 
   function rotate() {
-    setBatch((current) => matchingNodes.length === 0 ? 0 : current + 1);
+    setBatch((current) => current + 1);
   }
 
   return (
@@ -203,13 +204,15 @@ export default function Home() {
         <div className="discovery-actions">
           <span className="read-progress">已读 {visibleReadCount} / {nodes.length}</span>
           {visibleReadCount > 0 && <button className="clear-read-button" onClick={clearRead} type="button">清除已读</button>}
-          <button className="rotate-button" onClick={rotate} type="button" disabled={matchingNodes.length === 0}>换一批</button>
+          <button className="rotate-button" onClick={rotate} type="button">换一批</button>
         </div>
       </div>
 
       {message && <p className="form-message" role="status">{message}</p>}
       <section className="knowledge-grid" aria-live="polite">
-        {visibleNodes.map((node) => (
+        {visibleNodes.length === 0 && <TrialCard domain={domain} creator={creator} search={search} batch={batch} />}
+        {visibleNodes.map((node, index) => (
+          <Fragment key={node.id}>
           <article className="knowledge-card" key={node.id}>
             <div className="knowledge-meta">
               <span>{node.domainName} · {node.topicName}</span>
@@ -236,6 +239,8 @@ export default function Home() {
             </div>
             <Link className="reviewed-mark" href={`/knowledge/${node.slug}`}>已审核 · 查看相关常识 →</Link>
           </article>
+          {index === Math.min(1, visibleNodes.length - 1) && <TrialCard domain={domain} creator={creator} search={search} batch={batch} />}
+          </Fragment>
         ))}
         {nodes.length > 0 && matchingNodes.length === 0 && (
           <p className="empty">当前领域和创建者组合下还没有已发布常识。</p>

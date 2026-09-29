@@ -46,7 +46,7 @@ export default function ReviewPage() {
   const [message, setMessage] = useState('');
   const [creating, setCreating] = useState(false);
   const [topicFilter, setTopicFilter] = useState('all');
-  const [scopeFilter, setScopeFilter] = useState('v1');
+  const [scopeFilter, setScopeFilter] = useState('all');
 
   async function load() {
     try {
@@ -236,7 +236,7 @@ export default function ReviewPage() {
                 {item.sourceUrl && <a href={item.sourceUrl} target="_blank" rel="noreferrer">核对来源 ↗</a>}
               </div>
               <div className="decision-panel">
-                <p>{item.initialReviewRequired ? '人工初审：通过后仅进入公开尝试池，不会直接成为正式常识。' : '正式收录审核'}</p>
+                <p>{item.initialReviewRequired ? '人工初审：通过后仅进入公开尝试池，不会直接成为正式常识。' : item.status === 'queued_for_review' ? '优先审核 · 核验来源后决定收录' : '正式收录审核 · 票数仅供参考，无需等待达标'}</p>
                 {item.initialReviewRequired && <button className="button primary" type="button" onClick={() => void decide(item.id, 'approve_trial')}>初审通过，进入尝试池</button>}
                 {!item.initialReviewRequired && <>
                 <label>正式标题<input value={draft.title} onChange={(event) => update(item.id, 'title', event.target.value)} /></label>

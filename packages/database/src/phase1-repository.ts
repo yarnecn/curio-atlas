@@ -1062,8 +1062,8 @@ export class Phase1Repository {
       await this.assertReviewer(client, reviewerId);
       const result = await client.query<SubmissionRow>(
         `${submissionSelect} WHERE s.status IN ('queued_for_review', 'held')
-          OR (s.status IN ('trial', 'expanded_trial') AND (${initialReviewRequiredSql}))
-          ORDER BY s.created_at ASC`,
+          OR s.status IN ('trial', 'expanded_trial')
+          ORDER BY (s.status = 'queued_for_review') DESC, s.created_at ASC`,
       );
       return result.rows.map(mapSubmission);
     } finally {
@@ -1265,12 +1265,13 @@ export class Phase1Repository {
       const submission = await this.lockSubmission(client, submissionId);
       const initialReview = (await this.getSubmission(submissionId, client)).initialReviewRequired;
       if (input.decision !== 'hold' && submission.status !== 'queued_for_review'
+        && !(!initialReview && ['trial', 'expanded_trial'].includes(submission.status))
         && !(input.decision === 'reject' && submission.status === 'held')
         && !(initialReview && ['trial', 'expanded_trial', 'held'].includes(submission.status))) {
         throw new ContentRepositoryError('invalid_state', '只有进入审核队列的候选才能执行该决定。');
       }
       if (initialReview && ['approve_new', 'merge'].includes(input.decision)) {
-        throw new ContentRepositoryError('invalid_state', '请先通过人工初审进入尝试池，评分达标后再正式收录。');
+        throw new ContentRepositoryError('invalid_state', '请先通过人工初审，再核验来源并决定正式收录。');
       }
       if (input.decision === 'approve_trial' && !initialReview) {
         throw new ContentRepositoryError('invalid_state', '该候选不需要初审放行。');

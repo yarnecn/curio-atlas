@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { messageOf, miniApi } from '../../api';
 import { readIds as readStoredIds, FAVORITES_KEY, READ_KEY } from '../../storage';
 import './index.css';
+import { TrialCard } from '../../components/trial-card';
 
 const PAGE_SIZE = 8;
 const READ_STORAGE_KEY = READ_KEY;
@@ -66,7 +67,7 @@ export default function IndexPage() {
     <View className="mini-hero"><Text className="eyebrow">今天 · 已审核常识</Text><Text className="page-title">随手认识一点</Text><Text className="intro">不必先搜索，给自己几分钟，沿着兴趣看下去。</Text></View>
     <ScrollView className="tabs" scrollX>{domains.map((item) => <Button className={domain === item ? 'tab active' : 'tab'} key={item} onClick={() => { setDomain(item); setBatch(0); }}>{item}</Button>)}</ScrollView>
     {creator !== 'all' && <Button className="tab active" onClick={() => { setCreator('all'); setBatch(0); }}>只看{creatorLabels[creator]} · 清除 ×</Button>}
-    <View className="toolbar"><Text className="subtle">已读 {readCount} 条</Text><Button className="secondary-button" disabled={matching.length <= PAGE_SIZE || loading} onClick={() => setBatch((current) => current + 1)}>换一批</Button></View>
+    <View className="toolbar"><Text className="subtle">已读 {readCount} 条</Text><Button className="secondary-button" disabled={loading} onClick={() => setBatch((current) => current + 1)}>换一批</Button></View>
     {message && <View><Text className="message">{message}</Text><Button className="secondary-button" onClick={() => void load()}>重新加载</Button></View>}
     {loading && <Text className="empty">正在读取常识...</Text>}
     {!loading && !message && visible.length === 0 && <Text className="empty">当前筛选下暂无常识。</Text>}
@@ -78,6 +79,7 @@ export default function IndexPage() {
         <Text className="featured-detail">{featured.sections[0]?.paragraphs[0] ?? featured.summary}</Text>
         <View className="featured-footer"><Text onClick={(event) => { event.stopPropagation(); setCreator(featured.creatorKind); setBatch(0); }}>{featured.creatorLabel} · 筛选</Text><Text>约 {featured.readingTimeMinutes} 分钟</Text><Button className="favorite" onClick={(event) => toggleFavorite(featured.id, event)}>{favorites.includes(featured.id) ? '★' : '☆'}</Button></View>
       </View>}
+      <TrialCard domain={domain} creator={creator} batch={batch} />
       {visible.length > 1 && <Text className="section-label">再看几条</Text>}
       <View className="compact-list">{visible.slice(1).map((node) => <View className="compact-card" key={node.id} onClick={() => openKnowledge(node)}>
         <View className="card-meta"><Text>{node.domainName} · {node.topicName}</Text><Text>约 {node.readingTimeMinutes} 分钟</Text></View>
