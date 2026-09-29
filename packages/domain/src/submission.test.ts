@@ -40,6 +40,8 @@ describe('submission voting rules', () => {
   });
 
   it('rejects a direct automated-screening to published-equivalent transition', () => {
+    expect(() => assertSubmissionTransition('automated_screening', 'trial')).toThrow();
+    expect(() => assertSubmissionTransition('queued_for_review', 'trial')).not.toThrow();
     expect(() => assertSubmissionTransition('automated_screening', 'merged')).toThrow(
       'Invalid submission transition',
     );

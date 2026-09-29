@@ -123,6 +123,18 @@ textarea { resize: vertical; }
 }
 .content-card h2, .review-card h2 { margin: 1rem 0; font-size: 1.5rem; line-height: 1.55; }
 .content-card > p, .review-card p { line-height: 1.75; }
+.candidate-body, .candidate-note {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+}
+.content-card .candidate-body, .review-card .candidate-body {
+  margin: 1rem 0;
+  font-size: 1rem;
+  line-height: 1.85;
+}
+.candidate-note { font-size: 0.9rem; color: #566159; }
 .card-meta { display: flex; justify-content: space-between; gap: 1rem; margin: 0; color: #6b756e; font: 650 0.75rem/1.5 ui-sans-serif, system-ui; text-transform: uppercase; letter-spacing: 0; }
 .boundary { color: #5d675f; }
 .vote-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; margin-top: 1.5rem; }

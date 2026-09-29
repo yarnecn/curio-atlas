@@ -196,7 +196,7 @@ export default function ReviewPage() {
           <label>触发原因<textarea name="triggerReason" required minLength={4} maxLength={500} rows={2} placeholder="例：覆盖地图缺少解释天气与气候区别的基础节点。" /></label>
           <label>一句话结论<textarea name="statement" required minLength={8} maxLength={160} rows={3} /></label>
           <label>为什么值得知道<textarea name="whyUseful" required minLength={8} maxLength={500} rows={3} /></label>
-          <label>适用边界<textarea name="applicability" required minLength={2} maxLength={500} rows={2} /></label>
+          <label>需要注意（可选）<textarea name="applicability" minLength={8} maxLength={300} rows={2} placeholder="有特殊条件或例外时再写，没有可留空" /></label>
           <label>可核验来源<input name="sourceUrl" type="url" required placeholder="https://..." /></label>
           <label className="check"><input name="aiDisclosure" type="checkbox" defaultChecked />候选使用过 AI 生成或实质性改写</label>
           <button className="button primary" type="submit" disabled={creating || topics.length === 0}>{creating ? '登记中…' : '登记并进入 AI 检查'}</button>
@@ -228,17 +228,19 @@ export default function ReviewPage() {
                 </p>
                 <p className="candidate-origin">{originLabels[item.originType]} · {item.authorHandle}</p>
                 {item.triggerReason && <p className="trigger-reason">触发原因：{item.triggerReason}</p>}
-                <h2>{item.proposedTitle ?? item.displayStatement}</h2>
-                {item.proposedTitle && <p className="core-statement"><strong>一句话结论：</strong>{item.displayStatement}</p>}
-                {item.statement !== item.displayStatement && <details><summary>查看原始投稿</summary><p>{item.statement}</p></details>}
-                <p>{item.whyUseful}</p>
-                <p className="boundary">适用边界：{item.applicability}</p>
+                {item.proposedTitle && <h2>{item.proposedTitle}</h2>}
+                <p className="candidate-body">{item.displayStatement}</p>
+                {item.statement !== item.displayStatement && <details><summary>查看原始投稿</summary><p className="candidate-body">{item.statement}</p></details>}
+                <p className="candidate-note">{item.whyUseful}</p>
+                {item.applicability && <p className="boundary candidate-note">需要注意：{item.applicability}</p>}
                 {item.sourceUrl && <a href={item.sourceUrl} target="_blank" rel="noreferrer">核对来源 ↗</a>}
               </div>
               <div className="decision-panel">
+                <p>{item.initialReviewRequired ? '人工初审：通过后仅进入公开尝试池，不会直接成为正式常识。' : '正式收录审核'}</p>
+                {item.initialReviewRequired && <button className="button primary" type="button" onClick={() => void decide(item.id, 'approve_trial')}>初审通过，进入尝试池</button>}
+                {!item.initialReviewRequired && <>
                 <label>正式标题<input value={draft.title} onChange={(event) => update(item.id, 'title', event.target.value)} /></label>
                 <label>Slug<input value={draft.slug} onChange={(event) => update(item.id, 'slug', event.target.value)} /></label>
-                <label>审核理由<textarea rows={2} value={draft.reason} onChange={(event) => update(item.id, 'reason', event.target.value)} /></label>
                 <button className="button primary" type="button" onClick={() => void decide(item.id, 'approve_new')}>创建正式常识</button>
                 <div className="merge-row">
                   <select value={draft.targetKnowledgeNodeId} onChange={(event) => update(item.id, 'targetKnowledgeNodeId', event.target.value)}>
@@ -247,6 +249,8 @@ export default function ReviewPage() {
                   </select>
                   <button className="button" type="button" disabled={!draft.targetKnowledgeNodeId} onClick={() => void decide(item.id, 'merge')}>合并重复内容</button>
                 </div>
+                </>}
+                <label>审核理由<textarea rows={2} value={draft.reason} onChange={(event) => update(item.id, 'reason', event.target.value)} /></label>
                 <div className="secondary-actions">
                   <button type="button" onClick={() => void decide(item.id, 'hold')}>暂缓</button>
                   <button type="button" onClick={() => void decide(item.id, 'reject')}>驳回</button>

@@ -47,7 +47,7 @@ export const createSubmissionSchema = z.object({
   topicId: z.uuid(),
   statement: z.string().trim().min(12).max(160),
   whyUseful: z.string().trim().min(12).max(300),
-  applicability: z.string().trim().min(8).max(300),
+  applicability: z.string().trim().max(300).refine((value) => !value || value.length >= 8, '需要注意填写时至少 8 个字').default(''),
   sourceUrl: z.union([z.url(), z.literal('')]).optional(),
   experienceBased: z.boolean(),
   aiDisclosure: z.boolean(),
@@ -67,7 +67,7 @@ export const createInternalCandidateSchema = z.object({
   proposedSlug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   statement: z.string().trim().min(12).max(160),
   whyUseful: z.string().trim().min(12).max(300),
-  applicability: z.string().trim().min(8).max(300),
+  applicability: z.string().trim().max(300).refine((value) => !value || value.length >= 8, '需要注意填写时至少 8 个字').default(''),
   sourceUrl: z.url(),
   originType: z.enum(['source_discovery', 'coverage_gap', 'maintenance', 'admin_seed']),
   triggerReason: z.string().trim().min(4).max(500),
@@ -79,7 +79,7 @@ export const voteSchema = z.object({
 });
 
 export const reviewSubmissionSchema = z.object({
-  decision: z.enum(['approve_new', 'merge', 'reject', 'hold']),
+  decision: z.enum(['approve_trial', 'approve_new', 'merge', 'reject', 'hold']),
   reason: z.string().trim().min(2).max(500),
   title: z.string().trim().min(2).max(120).optional(),
   slug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(120).optional(),

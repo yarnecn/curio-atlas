@@ -98,6 +98,7 @@ function isDuplicateKey(error: unknown): boolean {
 }
 
 interface SubmissionRow {
+  initial_review_required: number;
   id: string;
   author_handle: string;
   origin_type: SubmissionOriginType;
@@ -220,8 +221,15 @@ export interface ReadyEvidencePackage {
   createdBy: string;
 }
 
+const initialReviewRequiredSql = `s.origin_type = 'user_submission' AND NOT EXISTS (
+  SELECT 1 FROM approval_requests ar WHERE ar.entity_type = 'submission'
+  AND ar.entity_id = s.id AND ar.action_type = 'submission_initial_review'
+  AND ar.status = 'approved'
+)`;
+
 const submissionSelect = `
   SELECT
+    (${initialReviewRequiredSql}) AS initial_review_required,
     s.id,
     u.public_handle AS author_handle,
     s.origin_type,
@@ -267,15 +275,16 @@ export class ContentRepositoryError extends Error {
 }
 
 export function nextStatusAfterAiScreening(
-  originType: SubmissionOriginType,
+  _originType: SubmissionOriginType,
   riskFlags: readonly string[],
 ): SubmissionStatus {
   if (riskFlags.length > 0) return 'held';
-  return originType === 'user_submission' ? 'trial' : 'queued_for_review';
+  return 'queued_for_review';
 }
 
 function mapSubmission(row: SubmissionRow): SubmissionView {
   return {
+    initialReviewRequired: Boolean(row.initial_review_required),
     id: row.id,
     authorHandle: row.author_handle,
     originType: row.origin_type,
@@ -1052,7 +1061,9 @@ export class Phase1Repository {
     try {
       await this.assertReviewer(client, reviewerId);
       const result = await client.query<SubmissionRow>(
-        `${submissionSelect} WHERE s.status = 'queued_for_review' ORDER BY s.review_queued_at ASC`,
+        `${submissionSelect} WHERE s.status IN ('queued_for_review', 'held')
+          OR (s.status IN ('trial', 'expanded_trial') AND (${initialReviewRequiredSql}))
+          ORDER BY s.created_at ASC`,
       );
       return result.rows.map(mapSubmission);
     } finally {
@@ -1103,6 +1114,9 @@ export class Phase1Repository {
       const submission = await this.lockSubmission(client, submissionId);
       if (submission.origin_type !== 'user_submission') {
         throw new ContentRepositoryError('invalid_state', '内部编辑候选不参与公开评分。');
+      }
+      if ((await this.getSubmission(submissionId, client)).initialReviewRequired) {
+        throw new ContentRepositoryError('invalid_state', '投稿尚未通过人工初审，不能评分。');
       }
       if (!['trial', 'expanded_trial', 'queued_for_review'].includes(submission.status)) {
         throw new ContentRepositoryError('invalid_state', '当前状态不能评分。');
@@ -1249,12 +1263,24 @@ export class Phase1Repository {
     return inTransaction(this.pool, async (client) => {
       await this.assertReviewer(client, reviewerId);
       const submission = await this.lockSubmission(client, submissionId);
-      if (input.decision !== 'hold' && submission.status !== 'queued_for_review') {
+      const initialReview = (await this.getSubmission(submissionId, client)).initialReviewRequired;
+      if (input.decision !== 'hold' && submission.status !== 'queued_for_review'
+        && !(input.decision === 'reject' && submission.status === 'held')
+        && !(initialReview && ['trial', 'expanded_trial', 'held'].includes(submission.status))) {
         throw new ContentRepositoryError('invalid_state', '只有进入审核队列的候选才能执行该决定。');
+      }
+      if (initialReview && ['approve_new', 'merge'].includes(input.decision)) {
+        throw new ContentRepositoryError('invalid_state', '请先通过人工初审进入尝试池，评分达标后再正式收录。');
+      }
+      if (input.decision === 'approve_trial' && !initialReview) {
+        throw new ContentRepositoryError('invalid_state', '该候选不需要初审放行。');
       }
 
       let knowledgeNodeId: string | null = null;
-      if (input.decision === 'approve_new') {
+      if (input.decision === 'approve_trial') {
+        assertSubmissionTransition(submission.status, 'trial');
+        await client.query("UPDATE submissions SET status = 'trial', trial_started_at = now(), review_queued_at = NULL, updated_at = now() WHERE id = $1", [submissionId]);
+      } else if (input.decision === 'approve_new') {
         knowledgeNodeId = await this.publishNewKnowledge(client, reviewerId, submission, input);
         assertSubmissionTransition(submission.status, 'merged');
         await client.query("UPDATE submissions SET status = 'merged', updated_at = now() WHERE id = $1", [submissionId]);
@@ -1274,7 +1300,7 @@ export class Phase1Repository {
         INSERT INTO approval_requests (
           action_type, entity_type, entity_id, requested_by_type, requested_by_id,
           status, payload, decided_by, decision_reason, decided_at
-        ) VALUES ('submission_review', 'submission', $1, 'user', $2, $3, $4, $5, $6, now())
+        ) VALUES ($7, 'submission', $1, 'user', $2, $3, $4, $5, $6, now())
       `, [
         submissionId,
         submission.author_id,
@@ -1282,6 +1308,7 @@ export class Phase1Repository {
         JSON.stringify(input),
         reviewerId,
         input.reason,
+        initialReview ? 'submission_initial_review' : 'submission_review',
       ]);
       await this.writeAudit(client, reviewerId, `submission.review.${input.decision}`, 'submission', submissionId,
         { status: submission.status }, { knowledgeNodeId, reason: input.reason });
@@ -1639,8 +1666,10 @@ export class Phase1Repository {
       { type: 'paragraph', text: statement },
       { type: 'heading', level: 2, text: '为什么有用' },
       { type: 'paragraph', text: revision.why_useful },
-      { type: 'heading', level: 2, text: '适用边界' },
-      { type: 'paragraph', text: revision.applicability },
+      ...(revision.applicability.trim() ? [
+        { type: 'heading', level: 2, text: '需要注意' },
+        { type: 'paragraph', text: revision.applicability },
+      ] : []),
       { type: 'source', sourceId },
     ]);
     const revisionId = randomUUID();

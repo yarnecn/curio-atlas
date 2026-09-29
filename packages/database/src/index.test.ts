@@ -9,8 +9,8 @@ describe('database defaults', () => {
 });
 
 describe('AI screening destination', () => {
-  it('sends a user submission into the public trial pool', () => {
-    expect(nextStatusAfterAiScreening('user_submission', [])).toBe('trial');
+  it('sends a user submission to human review before public exposure', () => {
+    expect(nextStatusAfterAiScreening('user_submission', [])).toBe('queued_for_review');
   });
 
   it.each(['source_discovery', 'coverage_gap', 'maintenance', 'admin_seed'] as const)(

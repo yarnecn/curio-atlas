@@ -52,9 +52,10 @@ export default function SubmissionsPage() {
         {items.map((item) => (
           <article className="content-card" key={item.id}>
             <div className="card-meta"><span>{item.topic.domainName} · {item.topic.name}</span><span>{statusLabels[item.status] ?? item.status}</span></div>
-            <h2>{item.displayStatement}</h2>
-            <p>{item.whyUseful}</p>
-            <p className="boundary">适用边界：{item.applicability}</p>
+            {item.proposedTitle && <h2>{item.proposedTitle}</h2>}
+            <p className="candidate-body">{item.displayStatement}</p>
+            <p className="candidate-note">{item.whyUseful}</p>
+            {item.applicability && <p className="boundary candidate-note">需要注意：{item.applicability}</p>}
             <div className="vote-row">
               <button type="button" onClick={() => void vote(item.id, 'useful')}>有用 {item.usefulCount}</button>
               <button type="button" onClick={() => void vote(item.id, 'not_useful')}>没用 {item.notUsefulCount}</button>

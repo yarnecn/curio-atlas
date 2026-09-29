@@ -1,5 +1,5 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   CONTENT_AI_QUEUE,
   SCREEN_SUBMISSION_JOB,
@@ -30,7 +30,8 @@ export class SubmissionsService {
   }
 
   async listPublic(): Promise<SubmissionView[]> {
-    return this.repository.listSubmissions(['trial', 'expanded_trial', 'queued_for_review'], ['user_submission']);
+    const items = await this.repository.listSubmissions(['trial', 'expanded_trial', 'queued_for_review'], ['user_submission']);
+    return items.filter((item) => item.initialReviewRequired === false);
   }
 
   async listForReview(reviewerId: string): Promise<SubmissionView[]> {
@@ -43,7 +44,12 @@ export class SubmissionsService {
 
   async get(id: string): Promise<SubmissionView> {
     try {
-      return await this.repository.getSubmission(id);
+      const item = await this.repository.getSubmission(id);
+      if (item.originType !== 'user_submission' || item.initialReviewRequired !== false
+        || !['trial', 'expanded_trial', 'queued_for_review'].includes(item.status)) {
+        throw new NotFoundException('候选内容不存在或尚未公开。');
+      }
+      return item;
     } catch (error) {
       return throwRepositoryError(error);
     }

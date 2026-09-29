@@ -37,6 +37,8 @@ const createdSubmission = {
 
 describe('SubmissionsService', () => {
   const repository = {
+    listSubmissions: vi.fn(),
+    getSubmission: vi.fn(),
     createSubmission: vi.fn(),
     createInternalCandidate: vi.fn(),
   };
@@ -51,6 +53,24 @@ describe('SubmissionsService', () => {
       repository as unknown as Phase1Repository,
       queue as unknown as Queue,
     );
+  });
+
+  it('hides initial-review candidates from the public list', async () => {
+    repository.listSubmissions.mockResolvedValue([
+      { ...createdSubmission, initialReviewRequired: true },
+      { ...createdSubmission, id: 'approved', status: 'trial', initialReviewRequired: false },
+    ]);
+    expect((await service.listPublic()).map((item) => item.id)).toEqual(['approved']);
+  });
+
+  it.each(['queued_for_review', 'trial', 'expanded_trial'])('blocks direct reads of unapproved %s candidates', async (status) => {
+    repository.getSubmission.mockResolvedValue({ ...createdSubmission, status, initialReviewRequired: true });
+    await expect(service.get(createdSubmission.id)).rejects.toThrow('尚未公开');
+  });
+
+  it('allows public reads after initial review', async () => {
+    repository.getSubmission.mockResolvedValue({ ...createdSubmission, status: 'trial', initialReviewRequired: false });
+    expect((await service.get(createdSubmission.id)).id).toBe(createdSubmission.id);
   });
 
   it('persists a candidate before enqueueing its AI screening job', async () => {

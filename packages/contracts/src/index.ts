@@ -31,7 +31,7 @@ export const SUBMISSION_ORIGIN_TYPES = [
 export type SubmissionOriginType = (typeof SUBMISSION_ORIGIN_TYPES)[number];
 export type InternalCandidateOriginType = Exclude<SubmissionOriginType, 'user_submission'>;
 export type VoteValue = 'useful' | 'not_useful';
-export type ReviewDecision = 'approve_new' | 'merge' | 'reject' | 'hold';
+export type ReviewDecision = 'approve_trial' | 'approve_new' | 'merge' | 'reject' | 'hold';
 
 export const CONTENT_AI_QUEUE = 'content-ai';
 export const SCREEN_SUBMISSION_JOB = 'screen-submission';
@@ -218,6 +218,7 @@ export interface SubmissionMetrics {
 }
 
 export interface SubmissionView extends SubmissionMetrics {
+  initialReviewRequired?: boolean;
   id: string;
   authorHandle: string;
   originType: SubmissionOriginType;

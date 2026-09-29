@@ -83,10 +83,10 @@ export function statusForMetrics(
 
 const allowedTransitions: Readonly<Record<CandidateStatus, readonly CandidateStatus[]>> = {
   submitted: ['automated_screening', 'withdrawn'],
-  automated_screening: ['trial', 'queued_for_review', 'held', 'rejected', 'withdrawn'],
-  trial: ['expanded_trial', 'queued_for_review', 'held', 'withdrawn'],
-  expanded_trial: ['trial', 'queued_for_review', 'held', 'withdrawn'],
-  queued_for_review: ['merged', 'rejected', 'held'],
+  automated_screening: ['queued_for_review', 'held', 'rejected', 'withdrawn'],
+  trial: ['expanded_trial', 'queued_for_review', 'rejected', 'held', 'withdrawn'],
+  expanded_trial: ['trial', 'queued_for_review', 'rejected', 'held', 'withdrawn'],
+  queued_for_review: ['trial', 'merged', 'rejected', 'held'],
   merged: [],
   rejected: [],
   withdrawn: [],

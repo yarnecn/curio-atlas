@@ -63,7 +63,7 @@ export default function ContributePage() {
         </select></label>
         <label>一句话结论<textarea name="statement" required minLength={8} maxLength={160} rows={3} placeholder="例：GDP 增长不意味着每个人的收入以相同比例增长。" /></label>
         <label>为什么有用<textarea name="whyUseful" required minLength={8} maxLength={500} rows={3} /></label>
-        <label>适用条件或例外<textarea name="applicability" required minLength={2} maxLength={500} rows={3} /></label>
+        <label>需要注意（可选）<textarea name="applicability" minLength={8} maxLength={300} rows={3} placeholder="有特殊条件或例外时再写，没有可留空" /></label>
         <label>来源网址<input name="sourceUrl" type="url" required={!experienceBased} placeholder="https://..." /></label>
         <label className="check"><input type="checkbox" checked={experienceBased} onChange={(event) => setExperienceBased(event.target.checked)} />这是个人经验，不作为可直接发布的正式事实</label>
         <label className="check"><input name="aiDisclosure" type="checkbox" />原始内容使用过 AI 生成或改写</label>

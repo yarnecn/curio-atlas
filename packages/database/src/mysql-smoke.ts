@@ -44,6 +44,16 @@ try {
   assert.deepEqual((await repository.getCurrentSubmissionRevision(created.submission.id)).ai_risk_flags, []);
 
   await completeRulesScreening(created.aiJobId, created.submission.id, created.submission.statement);
+  assert.equal((await repository.getSubmission(created.submission.id)).status, 'queued_for_review');
+  assert.equal((await repository.getSubmission(created.submission.id)).initialReviewRequired, true);
+  await assert.rejects(repository.recordVote(userId, created.submission.id, 'useful'));
+  const owners = await pool.query<{ id: string }>("SELECT id FROM app_users WHERE role = 'owner' ORDER BY created_at LIMIT 1");
+  const ownerId = owners.rows[0]?.id;
+  assert.ok(ownerId, '初始化后必须存在站长账号。');
+  await assert.rejects(repository.reviewSubmission(userId, created.submission.id, { decision: 'approve_trial', reason: '不能自行初审。' }));
+  await assert.rejects(repository.reviewSubmission(ownerId, created.submission.id, { decision: 'approve_new', reason: '不能跳过初审。' }));
+  await repository.reviewSubmission(ownerId, created.submission.id, { decision: 'approve_trial', reason: '烟测内容已人工确认。' });
+  assert.equal((await repository.getSubmission(created.submission.id)).initialReviewRequired, false);
   assert.equal((await repository.getSubmission(created.submission.id)).status, 'trial');
   const selfVote = await repository.recordVote(userId, created.submission.id, 'useful');
   assert.equal(selfVote.validVoteCount, 0);
@@ -53,9 +63,6 @@ try {
   assert.equal(loggedIn.user.id, userId);
   await repository.deleteSession(loggedIn.token);
 
-  const owners = await pool.query<{ id: string }>("SELECT id FROM app_users WHERE role = 'owner' ORDER BY created_at LIMIT 1");
-  const ownerId = owners.rows[0]?.id;
-  assert.ok(ownerId, '初始化后必须存在站长账号。');
 
   const firstSourceUrl = `https://example.com/mysql-smoke-owner-${suffix}`;
   sourceUrls.push(firstSourceUrl);

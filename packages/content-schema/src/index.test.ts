@@ -31,6 +31,26 @@ describe('knowledgeContentSchema', () => {
 });
 
 describe('candidate submission schemas', () => {
+  it('allows omitted, empty and whitespace-only notes', () => {
+    const base = {
+      topicId: '20000000-0000-4000-8000-000000000001',
+      statement: '人口密度不能单独代表生活质量。',
+      whyUseful: '避免用一个指标替代复杂的生活条件。',
+      experienceBased: false,
+      sourceUrl: 'https://example.com/source',
+      aiDisclosure: false,
+      proposedTitle: '人口密度',
+      proposedSlug: 'population-density',
+      originType: 'admin_seed',
+      triggerReason: '补充基础地理常识。',
+    };
+    for (const schema of [createSubmissionSchema, createInternalCandidateSchema]) {
+      for (const applicability of [undefined, '', '   ']) {
+        expect(schema.parse({ ...base, applicability }).applicability).toBe('');
+      }
+      expect(schema.safeParse({ ...base, applicability: '长'.repeat(301) }).success).toBe(false);
+    }
+  });
   it('requires a source unless the author explicitly marks personal experience', () => {
     const base = {
       topicId: '20000000-0000-4000-8000-000000000001',
