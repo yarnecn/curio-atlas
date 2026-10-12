@@ -1,5 +1,5 @@
 import { Button, Input, Picker, Text, Textarea, View } from '@tarojs/components';
-import Taro, { useDidShow } from '@tarojs/taro';
+import Taro, { useDidShow, useLoad } from '@tarojs/taro';
 import type { TopicSummary } from '@knowledge-map/contracts';
 import { useState } from 'react';
 import { isLoginRequired, messageOf, miniApi } from '../../api';
@@ -14,13 +14,30 @@ export default function ContributePage() {
   const [sourceUrl, setSourceUrl] = useState('');
   const [message, setMessage] = useState('');
   const [working, setWorking] = useState(false);
+  const [original, setOriginal] = useState('');
+  useLoad((params) => { if (params.note) void miniApi.note(params.note).then(note => { setOriginal(note.content); setStatement(note.content.length <= 160 ? note.content : ''); setSourceUrl(note.sourceUrl); setMessage('已带入私密记录，请提炼 12～160 字结论并补充用途与来源。原记录仍保留。'); }).catch(error => setMessage(messageOf(error, '原记录读取失败。'))); });
   useDidShow(() => { void miniApi.authState().then((state) => { if (!state.user) void Taro.navigateTo({ url: '/pages/login/index' }); }).catch(() => undefined); void miniApi.topics().then(setTopics).catch((error) => setMessage(messageOf(error, '话题加载失败。'))); });
   async function submit() {
+    if (statement.trim().length < 12 || statement.trim().length > 160) { setMessage('请将结论整理为 12～160 字。'); return; }
     if (!topics[topicIndex]) { setMessage('请先选择话题。'); return; }
     setWorking(true); setMessage('');
     try { await miniApi.createSubmission({ topicId: topics[topicIndex].id, statement, whyUseful, applicability, sourceUrl: sourceUrl || undefined, experienceBased: false, aiDisclosure: false }); setMessage('已提交，AI 预处理后会进入审核流程。'); setStatement(''); setWhyUseful(''); setApplicability(''); setSourceUrl(''); }
     catch (error) { if (isLoginRequired(error)) { void Taro.navigateTo({ url: '/pages/login/index' }); } else setMessage(messageOf(error, '提交失败，请稍后重试。')); }
     finally { setWorking(false); }
   }
-  return <View className="page"><Button className="back" onClick={() => void Taro.navigateBack()}>← 返回</Button><Text className="eyebrow">CONTRIBUTE · 投稿</Text><Text className="page-title">贡献一条精华</Text><Text className="intro">直接写清楚结论，不用提问。提交后会经过 AI 预处理和人工审核。</Text><View className="form-card"><View className="field"><Text>话题</Text><Picker mode="selector" range={topics.map((topic) => `${topic.domainName} · ${topic.name}`)} value={topicIndex} onChange={(event) => setTopicIndex(Number(event.detail.value))}><View className="input">{topics[topicIndex] ? `${topics[topicIndex].domainName} · ${topics[topicIndex].name}` : '选择话题'}</View></Picker></View><View className="field"><Text>常识内容</Text><Textarea className="textarea" value={statement} onInput={(event) => setStatement(event.detail.value)} maxlength={2000} placeholder="用一到几个短段落把结论说完整" /></View><View className="field"><Text>为什么有用</Text><Textarea className="textarea small" value={whyUseful} onInput={(event) => setWhyUseful(event.detail.value)} maxlength={500} /></View><View className="field"><Text>需要注意（可选）</Text><Textarea className="textarea small" value={applicability} onInput={(event) => setApplicability(event.detail.value)} maxlength={300} placeholder="有特殊条件或例外时再写，没有可留空" /></View><View className="field"><Text>来源链接（可选）</Text><Input className="input" value={sourceUrl} onInput={(event) => setSourceUrl(event.detail.value)} /></View><Button className="primary-button" loading={working} disabled={working} onClick={() => void submit()}>提交审核</Button>{message && <Text className="message">{message}</Text>}</View></View>;
+  return <View className="page">
+    <Button className="back" onClick={() => void Taro.navigateBack()}>← 返回</Button>
+    <Text className="page-title">贡献一条精华</Text>
+    <Text className="intro">整理好再提交，不会自动公开。投稿仍经过预处理与人工审核。</Text>
+    {original && <View className="form-card"><Text className="subtle">原始灵感 · 仅自己可见</Text><Text style={{ display: 'block', whiteSpace: 'pre-wrap' }}>{original}</Text></View>}
+    <View className="form-card">
+      <Text>话题</Text><Picker mode="selector" range={topics.map(topic => `${topic.domainName} · ${topic.name}`)} value={topicIndex} onChange={event => setTopicIndex(Number(event.detail.value))}><View className="input">{topics[topicIndex]?.name ?? '选择话题'}</View></Picker>
+      <Text>一句话结论（12～160 字）</Text><Textarea className="textarea" value={statement} onInput={event => setStatement(event.detail.value)} maxlength={160} />
+      <Text>为什么有用</Text><Textarea className="textarea small" value={whyUseful} onInput={event => setWhyUseful(event.detail.value)} maxlength={500} />
+      <Text>需要注意（可选）</Text><Textarea className="textarea small" value={applicability} onInput={event => setApplicability(event.detail.value)} maxlength={300} />
+      <Text>来源链接</Text><Input className="input" value={sourceUrl} onInput={event => setSourceUrl(event.detail.value)} />
+      <Button className="primary-button" loading={working} disabled={working} onClick={() => void submit()}>提交审核</Button>
+      {message && <Text className="message">{message}</Text>}
+    </View>
+  </View>;
 }

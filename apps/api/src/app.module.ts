@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { NotesController } from './notes/notes.controller';
 import { BullModule } from '@nestjs/bullmq';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
@@ -23,7 +24,7 @@ import { SubmissionsModule } from './submissions/submissions.module';
     KnowledgeModule,
     OperationsModule,
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, NotesController],
   providers: [HealthService],
 })
 export class AppModule {}

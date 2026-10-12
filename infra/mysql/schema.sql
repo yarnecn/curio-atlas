@@ -14,6 +14,29 @@ CREATE TABLE IF NOT EXISTS app_users (
   updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS personal_notes (
+  id CHAR(36) PRIMARY KEY,
+  user_id CHAR(36) NOT NULL,
+  content TEXT NOT NULL,
+  source_url VARCHAR(2048) NOT NULL DEFAULT '',
+  request_key VARCHAR(80) NOT NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  UNIQUE KEY notes_request (user_id, request_key),
+  KEY notes_owner (user_id, created_at),
+  FOREIGN KEY (user_id) REFERENCES app_users(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS personal_note_tokens (
+  id CHAR(36) PRIMARY KEY,
+  user_id CHAR(36) NOT NULL,
+  token_hash CHAR(64) NOT NULL UNIQUE,
+  name VARCHAR(60) NOT NULL,
+  expires_at DATETIME(3) NOT NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  FOREIGN KEY (user_id) REFERENCES app_users(id)
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS knowledge_domains (
   id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
   slug VARCHAR(100) NOT NULL UNIQUE,

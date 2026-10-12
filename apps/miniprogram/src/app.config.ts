@@ -3,6 +3,7 @@ export default defineAppConfig({
     'pages/index/index',
     'pages/favorites/index',
     'pages/profile/index',
+    'pages/notes/index',
     'pages/knowledge/index',
     'pages/login/index',
     'pages/contribute/index',

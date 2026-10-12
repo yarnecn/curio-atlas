@@ -149,6 +149,7 @@ export default function Home() {
         <nav aria-label="主要导航">
           <Link aria-current="page" href="/">发现</Link>
           <Link href="/submissions">候选</Link>
+          <Link href="/notes">随手记</Link>
           <Link href="/contribute">贡献</Link>
           <AccountNav />
         </nav>

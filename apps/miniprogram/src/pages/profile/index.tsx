@@ -27,6 +27,7 @@ export default function ProfilePage() {
     <Text className="intro">阅读和本机收藏无需登录。投稿、评分时使用昵称账号。</Text>
     <View className="form-card">
       {loading ? <Text className="subtle">正在处理...</Text> : user ? <Text className="subtle">@{user.publicHandle}</Text> : <Button className="primary-button" onClick={() => void Taro.navigateTo({ url: '/pages/login/index' })}>登录 / 注册</Button>}
+      <Button className="primary-button" onClick={() => void Taro.navigateTo({ url: '/pages/notes/index' })}>随手记 · 先留住灵感</Button>
       <Button className="secondary-button" onClick={() => void Taro.navigateTo({ url: '/pages/contribute/index' })}>写一条常识</Button>
       <Button className="secondary-button" onClick={() => void Taro.navigateTo({ url: '/pages/submissions/index' })}>尝试池 · 帮忙评一评</Button>
       {user && <Button className="link-button" disabled={loading} onClick={() => void logout()}>退出登录</Button>}

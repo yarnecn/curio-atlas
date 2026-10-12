@@ -14,8 +14,14 @@ export default function ContributePage() {
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [experienceBased, setExperienceBased] = useState(false);
+  const [note, setNote] = useState<{ content: string; sourceUrl: string } | null>(null);
 
   useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('note');
+    if (id) void fetch(`/api/notes/${encodeURIComponent(id)}`, { cache: 'no-store' }).then(async response => {
+      if (!response.ok) throw new Error('原记录无法读取，请登录后重试。');
+      setNote(await response.json());
+    }).catch((error: Error) => setMessage(error.message));
     void api.topics().then(setTopics).catch((error: unknown) => {
       setMessage(error instanceof Error ? error.message : '话题加载失败。');
     });
@@ -57,14 +63,16 @@ export default function ContributePage() {
         <p>这里不是提问区。请给出简短结论、用途、适用边界和来源；投稿会经过 AI 预处理与人工审核。</p>
       </header>
       <form className="editor-card" onSubmit={submit}>
+        <Link href="/notes">还没想好？先私密记下来</Link>
+        {note && <aside><h2>原始灵感（仅自己可见）</h2><p style={{ whiteSpace: 'pre-wrap' }}>{note.content}</p><p>请将原文提炼为简短结论，并补充用途与依据；不会自动公开原记录。</p></aside>}
         <label>话题<select name="topicId" required defaultValue="">
           <option value="" disabled>选择话题</option>
           {topics.map((topic) => <option value={topic.id} key={topic.id}>{topic.domainName} · {topic.name}</option>)}
         </select></label>
-        <label>一句话结论<textarea name="statement" required minLength={8} maxLength={160} rows={3} placeholder="例：GDP 增长不意味着每个人的收入以相同比例增长。" /></label>
+        <label>一句话结论（12～160 字）<textarea key={note ? 'note' : 'empty'} defaultValue={note && note.content.length <= 160 ? note.content : ''} name="statement" required minLength={12} maxLength={160} rows={3} placeholder="例：GDP 增长不意味着每个人的收入以相同比例增长。" /></label>
         <label>为什么有用<textarea name="whyUseful" required minLength={8} maxLength={500} rows={3} /></label>
         <label>需要注意（可选）<textarea name="applicability" minLength={8} maxLength={300} rows={3} placeholder="有特殊条件或例外时再写，没有可留空" /></label>
-        <label>来源网址<input name="sourceUrl" type="url" required={!experienceBased} placeholder="https://..." /></label>
+        <label>来源网址<input key={note?.sourceUrl ?? ''} defaultValue={note?.sourceUrl ?? ''} name="sourceUrl" type="url" required={!experienceBased} placeholder="https://..." /></label>
         <label className="check"><input type="checkbox" checked={experienceBased} onChange={(event) => setExperienceBased(event.target.checked)} />这是个人经验，不作为可直接发布的正式事实</label>
         <label className="check"><input name="aiDisclosure" type="checkbox" />原始内容使用过 AI 生成或改写</label>
         <button className="button primary" type="submit" disabled={submitting || topics.length === 0}>{submitting ? '提交中…' : '提交候选精华'}</button>

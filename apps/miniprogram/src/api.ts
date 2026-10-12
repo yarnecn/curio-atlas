@@ -46,6 +46,10 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 }
 
 export const miniApi = {
+  notes: (offset = 0) => request<PersonalNote[]>(`/notes?offset=${offset}`),
+  note: (id: string) => request<PersonalNote>(`/notes/${encodeURIComponent(id)}`),
+  saveNote: (content: string, sourceUrl: string, key: string, id?: string) => request(`/notes${id ? `/${id}` : ''}`, { method: id ? 'PUT' : 'POST', data: { content, sourceUrl }, header: { 'Idempotency-Key': key } }),
+  deleteNote: (id: string) => request(`/notes/${id}`, { method: 'DELETE' }),
   authState: () => request<AuthStateView>('/auth/me'),
   logout: async () => {
     const state = await request<AuthStateView>('/auth/logout', { method: 'POST' });
@@ -61,6 +65,8 @@ export const miniApi = {
   vote: (id: string, input: VoteInput) => request<SubmissionView>(`/submissions/${id}/vote`, { method: 'PUT', data: input }),
   createSubmission: (input: CreateSubmissionInput) => request<CreateSubmissionResponse>('/submissions', { method: 'POST', data: input }),
 };
+
+export type PersonalNote = { id: string; content: string; sourceUrl: string; createdAt: string };
 
 export function messageOf(error: unknown, fallback: string): string {
   return error instanceof Error && error.message ? error.message : fallback;
