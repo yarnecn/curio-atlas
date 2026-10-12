@@ -52,7 +52,7 @@ export default function SubmissionsPage() {
         {items.map((item) => (
           <article className="content-card" key={item.id}>
             <div className="card-meta"><span>{item.topic.domainName} · {item.topic.name}</span><span>{statusLabels[item.status] ?? item.status}</span></div>
-            {item.proposedTitle && <h2>{item.proposedTitle}</h2>}
+            <h2><Link href={`/submissions/${item.id}`}>{item.proposedTitle || `${item.topic.name} · 候选试读`}</Link></h2>
             <p className="candidate-body">{item.displayStatement}</p>
             <p className="candidate-note">{item.whyUseful}</p>
             {item.applicability && <p className="boundary candidate-note">需要注意：{item.applicability}</p>}

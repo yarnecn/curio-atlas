@@ -141,7 +141,7 @@ export default function ReviewPage() {
       await api.reviewSubmission(id, {
         decision,
         reason: draft.reason,
-        title: decision === 'approve_new' ? draft.title : undefined,
+        title: decision === 'approve_new' || decision === 'approve_trial' ? draft.title : undefined,
         slug: decision === 'approve_new' ? draft.slug : undefined,
         targetKnowledgeNodeId: decision === 'merge' ? draft.targetKnowledgeNodeId : undefined,
       });
@@ -237,7 +237,7 @@ export default function ReviewPage() {
               </div>
               <div className="decision-panel">
                 <p>{item.initialReviewRequired ? '人工初审：通过后仅进入公开尝试池，不会直接成为正式常识。' : item.status === 'queued_for_review' ? '优先审核 · 核验来源后决定收录' : '正式收录审核 · 票数仅供参考，无需等待达标'}</p>
-                {item.initialReviewRequired && <button className="button primary" type="button" onClick={() => void decide(item.id, 'approve_trial')}>初审通过，进入尝试池</button>}
+                {item.initialReviewRequired && <><label>候选标题（2～80 字）<input value={draft.title} minLength={2} maxLength={80} onChange={event => update(item.id, 'title', event.target.value)} /></label><button className="button primary" type="button" onClick={() => void decide(item.id, 'approve_trial')}>初审通过，进入尝试池</button></>}
                 {!item.initialReviewRequired && <>
                 <label>正式标题<input value={draft.title} onChange={(event) => update(item.id, 'title', event.target.value)} /></label>
                 <label>Slug<input value={draft.slug} onChange={(event) => update(item.id, 'slug', event.target.value)} /></label>

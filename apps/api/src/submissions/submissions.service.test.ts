@@ -78,6 +78,7 @@ describe('SubmissionsService', () => {
     queue.add.mockResolvedValue({ id: 'ai-job-1' });
 
     const result = await service.create('00000000-0000-4000-8000-000000000002', {
+      proposedTitle: '测试候选标题',
       topicId: createdSubmission.topic.id,
       statement: createdSubmission.statement,
       whyUseful: createdSubmission.whyUseful,
@@ -101,6 +102,7 @@ describe('SubmissionsService', () => {
     queue.add.mockRejectedValue(new Error('redis unavailable'));
 
     await expect(service.create('00000000-0000-4000-8000-000000000002', {
+      proposedTitle: '测试候选标题',
       topicId: createdSubmission.topic.id,
       statement: createdSubmission.statement,
       whyUseful: createdSubmission.whyUseful,

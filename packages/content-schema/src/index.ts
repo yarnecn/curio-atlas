@@ -43,9 +43,13 @@ export const knowledgeContentSchema = z.array(contentBlockSchema).superRefine((b
 export type ContentBlock = z.infer<typeof contentBlockSchema>;
 export type KnowledgeContent = z.infer<typeof knowledgeContentSchema>;
 
+export const candidateTitleSchema = z.string().trim().min(2).max(80);
+export const candidateSummarySchema = z.string().trim().min(12).max(160);
+
 export const createSubmissionSchema = z.object({
+  proposedTitle: candidateTitleSchema,
   topicId: z.uuid(),
-  statement: z.string().trim().min(12).max(160),
+  statement: candidateSummarySchema,
   whyUseful: z.string().trim().min(12).max(300),
   applicability: z.string().trim().max(300).refine((value) => !value || value.length >= 8, '需要注意填写时至少 8 个字').default(''),
   sourceUrl: z.union([z.url(), z.literal('')]).optional(),
@@ -63,9 +67,9 @@ export const createSubmissionSchema = z.object({
 
 export const createInternalCandidateSchema = z.object({
   topicId: z.uuid(),
-  proposedTitle: z.string().trim().min(2).max(80),
+  proposedTitle: candidateTitleSchema,
   proposedSlug: z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  statement: z.string().trim().min(12).max(160),
+  statement: candidateSummarySchema,
   whyUseful: z.string().trim().min(12).max(300),
   applicability: z.string().trim().max(300).refine((value) => !value || value.length >= 8, '需要注意填写时至少 8 个字').default(''),
   sourceUrl: z.url(),

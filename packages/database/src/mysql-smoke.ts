@@ -33,6 +33,7 @@ try {
   assert.ok(topic, '初始化后至少应有一个可用话题。');
   const created = await repository.createSubmission(userId, {
     topicId: topic.id,
+    proposedTitle: 'MySQL 投稿烟测',
     statement: 'MySQL 烟测用于确认投稿、AI 状态和登录链路可以真实写入数据库。',
     whyUseful: '它能发现只靠建表检查无法发现的字段默认值和 SQL 方言问题。',
     applicability: '只在自动化测试数据库中运行，不会发布到正式常识。',

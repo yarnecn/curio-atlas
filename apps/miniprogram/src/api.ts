@@ -62,6 +62,7 @@ export const miniApi = {
   knowledgeNodes: () => request<KnowledgeNodeSummary[]>('/knowledge'),
   knowledgeNode: (slug: string) => request<KnowledgeNodeDetail>(`/knowledge/slug/${encodeURIComponent(slug)}`),
   submissions: () => request<SubmissionView[]>('/submissions'),
+  submission: (id: string) => request<SubmissionView>(`/submissions/${encodeURIComponent(id)}`),
   vote: (id: string, input: VoteInput) => request<SubmissionView>(`/submissions/${id}/vote`, { method: 'PUT', data: input }),
   createSubmission: (input: CreateSubmissionInput) => request<CreateSubmissionResponse>('/submissions', { method: 'POST', data: input }),
 };

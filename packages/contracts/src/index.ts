@@ -240,6 +240,7 @@ export interface SubmissionView extends SubmissionMetrics {
 }
 
 export interface CreateSubmissionInput {
+  proposedTitle: string;
   topicId: string;
   statement: string;
   whyUseful: string;

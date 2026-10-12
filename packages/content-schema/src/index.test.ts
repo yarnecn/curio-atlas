@@ -53,6 +53,7 @@ describe('candidate submission schemas', () => {
   });
   it('requires a source unless the author explicitly marks personal experience', () => {
     const base = {
+      proposedTitle: '人口密度与生活质量',
       topicId: '20000000-0000-4000-8000-000000000001',
       statement: '人口密度不能单独代表生活质量。',
       whyUseful: '避免用一个指标替代复杂的生活条件。',

@@ -31,7 +31,7 @@ import type {
   UserRole,
   VoteValue,
 } from '@knowledge-map/contracts';
-import { knowledgeContentSchema, type KnowledgeContent } from '@knowledge-map/content-schema';
+import { candidateTitleSchema, candidateSummarySchema, knowledgeContentSchema, type KnowledgeContent } from '@knowledge-map/content-schema';
 import {
   assertSubmissionTransition,
   calculateVoteMetrics,
@@ -129,6 +129,7 @@ interface SubmissionRow {
 }
 
 interface LockedSubmissionRow {
+  proposed_title: string | null;
   id: string;
   author_id: string;
   topic_id: string;
@@ -1094,6 +1095,7 @@ export class Phase1Repository {
     return inTransaction(this.pool, async (client) => {
       await this.assertReviewer(client, reviewerId);
       return this.createCandidateRecord(client, reviewerId, {
+        proposedTitle: input.proposedTitle,
         topicId: input.topicId,
         statement: input.statement,
         whyUseful: input.whyUseful,
@@ -1279,6 +1281,9 @@ export class Phase1Repository {
 
       let knowledgeNodeId: string | null = null;
       if (input.decision === 'approve_trial') {
+        const title = candidateTitleSchema.safeParse(input.title ?? submission.proposed_title);
+        if (!title.success) throw new ContentRepositoryError('validation', '初审通过前请补齐 2～80 字标题。');
+        await client.query('UPDATE submissions SET proposed_title = $1 WHERE id = $2', [title.data, submissionId]);
         assertSubmissionTransition(submission.status, 'trial');
         await client.query("UPDATE submissions SET status = 'trial', trial_started_at = now(), review_queued_at = NULL, updated_at = now() WHERE id = $1", [submissionId]);
       } else if (input.decision === 'approve_new') {
@@ -1501,7 +1506,7 @@ export class Phase1Repository {
 
   private async lockSubmission(client: PoolClient, id: string): Promise<LockedSubmissionRow> {
     const row = await oneOrNull<LockedSubmissionRow>(client, `
-      SELECT id, author_id, topic_id, origin_type, status, current_revision_id
+      SELECT id, author_id, topic_id, origin_type, proposed_title, status, current_revision_id
       FROM submissions WHERE id = $1 FOR UPDATE
     `, [id]);
     if (!row) throw new ContentRepositoryError('not_found', '候选内容不存在。');
@@ -1520,6 +1525,9 @@ export class Phase1Repository {
       input.topicId,
     ]);
     if (!topic) throw new ContentRepositoryError('validation', '所选话题不存在或已停用。');
+    const title = candidateTitleSchema.safeParse(proposal?.title ?? input.proposedTitle);
+    const summary = candidateSummarySchema.safeParse(input.statement);
+    if (!title.success || !summary.success) throw new ContentRepositoryError('validation', '候选需要 2～80 字标题和 12～160 字摘要。');
 
     const submissionId = randomUUID();
     await client.query(`
@@ -1527,7 +1535,7 @@ export class Phase1Repository {
         id, author_id, topic_id, origin_type, trigger_reason, proposed_title, proposed_slug, status
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, 'automated_screening')
-    `, [submissionId, actorId, input.topicId, originType, triggerReason, proposal?.title ?? null, proposal?.slug ?? null]);
+    `, [submissionId, actorId, input.topicId, originType, triggerReason, title.data, proposal?.slug ?? null]);
 
     const revisionId = randomUUID();
     await client.query(`

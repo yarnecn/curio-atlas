@@ -8,6 +8,7 @@ export default defineAppConfig({
     'pages/login/index',
     'pages/contribute/index',
     'pages/submissions/index',
+    'pages/submission/index',
   ],
   tabBar: {
     color: '#778179',
