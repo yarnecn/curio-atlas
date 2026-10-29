@@ -14,7 +14,12 @@ async function visit(directory) {
     }
     if (!entry.name.endsWith('.md')) continue;
     const content = await readFile(path, 'utf8');
-    if (!content.startsWith('# ')) errors.push(`${path}: missing level-1 title`);
+    // Markdown skills may begin with YAML frontmatter. The first heading still
+    // needs to be a level-1 title, but it does not have to precede metadata.
+    const body = /^(?:---\r?\n)/.test(content)
+      ? content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '')
+      : content;
+    if (!body.trimStart().startsWith('# ')) errors.push(`${path}: missing level-1 title`);
     if (content.includes('\r')) errors.push(`${path}: use LF line endings`);
   }
 }
