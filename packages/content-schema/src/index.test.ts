@@ -51,7 +51,7 @@ describe('candidate submission schemas', () => {
       expect(schema.safeParse({ ...base, applicability: '长'.repeat(301) }).success).toBe(false);
     }
   });
-  it('requires a source unless the author explicitly marks personal experience', () => {
+  it('allows optional sources for submissions', () => {
     const base = {
       proposedTitle: '人口密度与生活质量',
       topicId: '20000000-0000-4000-8000-000000000001',
@@ -60,7 +60,7 @@ describe('candidate submission schemas', () => {
       applicability: '比较地区时还要结合资源和基础设施。',
       aiDisclosure: false,
     };
-    expect(createSubmissionSchema.safeParse({ ...base, experienceBased: false }).success).toBe(false);
+    expect(createSubmissionSchema.safeParse({ ...base, experienceBased: false }).success).toBe(true);
     expect(createSubmissionSchema.safeParse({ ...base, experienceBased: true }).success).toBe(true);
   });
 
@@ -74,7 +74,7 @@ describe('candidate submission schemas', () => {
     }).success).toBe(true);
   });
 
-  it('accepts only sourced, non-user internal editorial candidates', () => {
+  it('accepts optional sources for non-user internal editorial candidates', () => {
     const candidate = {
       topicId: '20000000-0000-4000-8000-000000000001',
       proposedTitle: '天气与气候',
@@ -89,7 +89,7 @@ describe('candidate submission schemas', () => {
     expect(createInternalCandidateSchema.safeParse({ ...candidate, originType: 'coverage_gap' }).success).toBe(true);
     expect(createInternalCandidateSchema.safeParse({ ...candidate, originType: 'user_submission' }).success).toBe(false);
     expect(createInternalCandidateSchema.safeParse({ ...candidate, originType: 'coverage_gap', sourceUrl: '' }).success)
-      .toBe(false);
+      .toBe(true);
   });
 
   it('requires a target version and a meaningful rollback reason', () => {

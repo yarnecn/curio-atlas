@@ -1,0 +1,44 @@
+import { defineConfig, type UserConfigExport } from '@tarojs/cli';
+import devConfig from './dev';
+import prodConfig from './prod';
+
+export default defineConfig(async (
+  merge: (...configs: Array<object | null | undefined>) => object,
+  { mode }: { mode: string },
+) => {
+  const baseConfig: UserConfigExport = {
+    projectName: 'court',
+    date: '2026-09-02',
+    designWidth: 750,
+    deviceRatio: { 750: 1 },
+    sourceRoot: 'src',
+    // Keep release builds from overwriting files owned by an active dev watcher.
+    outputRoot: mode === 'production' ? 'dist-release' : 'dist',
+    framework: 'react',
+    compiler: { type: 'webpack5', prebundle: { enable: false } },
+    cache: { enable: false },
+    plugins: [],
+    defineConstants: {
+      __APP_VERSION__: JSON.stringify(process.env.APP_VERSION ?? 'development'),
+    },
+    copy: { patterns: [], options: {} },
+    mini: {
+      postcss: {
+        pxtransform: { enable: true, config: {} },
+        url: { enable: true, config: { limit: 1024 } },
+        cssModules: {
+          enable: false,
+          config: {
+            namingPattern: 'module',
+            generateScopedName: '[name]__[local]___[hash:base64:5]',
+          },
+        },
+      },
+    },
+  };
+
+  return mode === 'development'
+    ? merge({}, baseConfig, devConfig)
+    : merge({}, baseConfig, prodConfig);
+});
+

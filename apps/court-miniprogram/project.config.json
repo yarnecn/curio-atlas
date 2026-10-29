@@ -1,0 +1,8 @@
+{
+  "description": "芝麻开庭 · 生活小事讨论法庭",
+  "miniprogramRoot": "dist-release/",
+  "projectname": "芝麻开庭",
+  "appid": "touristappid",
+  "compileType": "miniprogram",
+  "setting": { "es6": true, "minified": true }
+}

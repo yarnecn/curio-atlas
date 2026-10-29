@@ -1464,7 +1464,7 @@ export class Phase1Repository {
       `, [restoredId]);
       if (!restored) throw new Error('Failed to create rollback revision.');
 
-      const copiedClaims = await client.query(`
+      await client.query(`
         INSERT INTO claims (
           knowledge_revision_id, statement, source_id, evidence_locator, confidence,
           valid_from, valid_to, verified_by, verified_at
@@ -1474,9 +1474,7 @@ export class Phase1Repository {
         FROM claims
         WHERE knowledge_revision_id = $3
       `, [restored.id, reviewerId, target.id]);
-      if (copiedClaims.rowCount === 0) {
-        throw new ContentRepositoryError('validation', '目标版本缺少可核验来源，不能回滚发布。');
-      }
+
 
       const summary = firstParagraph(target.content_blocks) ?? node.summary;
       await client.query(`
@@ -1639,9 +1637,9 @@ export class Phase1Repository {
     return row;
   }
 
-  private async createSourceForRevision(client: PoolClient, revision: CurrentRevisionRow): Promise<string> {
+  private async createSourceForRevision(client: PoolClient, revision: CurrentRevisionRow): Promise<string | null> {
     if (!revision.source_url) {
-      throw new ContentRepositoryError('validation', '正式常识必须有可核验来源，个人经验不能直接发布。');
+      return null;
     }
     const sourceId = randomUUID();
     await client.query(`
@@ -1679,7 +1677,7 @@ export class Phase1Repository {
         { type: 'heading', level: 2, text: '需要注意' },
         { type: 'paragraph', text: revision.applicability },
       ] : []),
-      { type: 'source', sourceId },
+      ...(sourceId ? [{ type: 'source', sourceId }] : []),
     ]);
     const revisionId = randomUUID();
     await client.query(`
@@ -1692,7 +1690,7 @@ export class Phase1Repository {
       UPDATE knowledge_nodes SET status = 'published', current_revision_id = $2, updated_at = now()
       WHERE id = $1
     `, [nodeId, revisionId]);
-    await client.query(`
+    if (sourceId) await client.query(`
       INSERT INTO claims (knowledge_revision_id, statement, source_id, evidence_locator, verified_by, verified_at)
       VALUES ($1, $2, $3, '', $4, now())
     `, [revisionId, statement, sourceId, reviewerId]);
@@ -1760,7 +1758,7 @@ export class Phase1Repository {
       ...previousBlocks,
       { type: 'heading', level: 2, text: '补充' },
       { type: 'paragraph', text: statement },
-      { type: 'source', sourceId },
+      ...(sourceId ? [{ type: 'source', sourceId }] : []),
     ]);
     await client.query("UPDATE knowledge_revisions SET review_status = 'superseded' WHERE id = $1", [
       target.current_revision_id,
@@ -1776,7 +1774,7 @@ export class Phase1Repository {
       target.id,
       revisionId,
     ]);
-    await client.query(`
+    if (sourceId) await client.query(`
       INSERT INTO claims (knowledge_revision_id, statement, source_id, evidence_locator, verified_by, verified_at)
       VALUES ($1, $2, $3, '', $4, now())
     `, [revisionId, statement, sourceId, reviewerId]);

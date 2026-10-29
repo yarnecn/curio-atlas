@@ -197,7 +197,7 @@ export default function ReviewPage() {
           <label>一句话结论<textarea name="statement" required minLength={8} maxLength={160} rows={3} /></label>
           <label>为什么值得知道<textarea name="whyUseful" required minLength={8} maxLength={500} rows={3} /></label>
           <label>需要注意（可选）<textarea name="applicability" minLength={8} maxLength={300} rows={2} placeholder="有特殊条件或例外时再写，没有可留空" /></label>
-          <label>可核验来源<input name="sourceUrl" type="url" required placeholder="https://..." /></label>
+          <label>参考来源（可选）<input name="sourceUrl" type="url" placeholder="https://..." /></label>
           <label className="check"><input name="aiDisclosure" type="checkbox" defaultChecked />候选使用过 AI 生成或实质性改写</label>
           <button className="button primary" type="submit" disabled={creating || topics.length === 0}>{creating ? '登记中…' : '登记并进入 AI 检查'}</button>
         </form>
@@ -233,7 +233,7 @@ export default function ReviewPage() {
                 {item.statement !== item.displayStatement && <details><summary>查看原始投稿</summary><p className="candidate-body">{item.statement}</p></details>}
                 <p className="candidate-note">{item.whyUseful}</p>
                 {item.applicability && <p className="boundary candidate-note">需要注意：{item.applicability}</p>}
-                {item.sourceUrl && <a href={item.sourceUrl} target="_blank" rel="noreferrer">核对来源 ↗</a>}
+                {item.sourceUrl ? <a href={item.sourceUrl} target="_blank" rel="noreferrer">核对来源 ↗</a> : <p>未提供来源，请根据内容独立判断通过或拒绝。</p>}
               </div>
               <div className="decision-panel">
                 <p>{item.initialReviewRequired ? '人工初审：通过后仅进入公开尝试池，不会直接成为正式常识。' : item.status === 'queued_for_review' ? '优先审核 · 核验来源后决定收录' : '正式收录审核 · 票数仅供参考，无需等待达标'}</p>

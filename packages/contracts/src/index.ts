@@ -262,7 +262,7 @@ export interface CreateInternalCandidateInput {
   statement: string;
   whyUseful: string;
   applicability: string;
-  sourceUrl: string;
+  sourceUrl?: string;
   originType: InternalCandidateOriginType;
   triggerReason: string;
   aiDisclosure: boolean;

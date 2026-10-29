@@ -19,7 +19,8 @@
     "test": "vitest run src --pool=threads --maxWorkers=1",
     "content-status": "tsx src/content-status.ts",
     "initialize": "tsx src/initialize.ts",
-    "smoke:mysql": "tsx src/mysql-smoke.ts"
+    "smoke:mysql": "tsx src/mysql-smoke.ts",
+    "smoke:court": "tsx src/court-smoke.ts"
   },
   "dependencies": {
     "@knowledge-map/content-schema": "workspace:*",

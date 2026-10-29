@@ -74,8 +74,8 @@ export default function ContributePage() {
         <label>一句话结论（12～160 字）<textarea key={note ? 'note' : 'empty'} defaultValue={note && note.content.length <= 160 ? note.content : ''} name="statement" required minLength={12} maxLength={160} rows={3} placeholder="例：GDP 增长不意味着每个人的收入以相同比例增长。" /></label>
         <label>为什么有用（12～300 字）<textarea name="whyUseful" required minLength={12} maxLength={300} rows={3} /></label>
         <label>需要注意（可选）<textarea name="applicability" minLength={8} maxLength={300} rows={3} placeholder="有特殊条件或例外时再写，没有可留空" /></label>
-        <label>来源网址<input key={note?.sourceUrl ?? ''} defaultValue={note?.sourceUrl ?? ''} name="sourceUrl" type="url" required={!experienceBased} placeholder="https://..." /></label>
-        <label className="check"><input type="checkbox" checked={experienceBased} onChange={(event) => setExperienceBased(event.target.checked)} />这是个人经验，不作为可直接发布的正式事实</label>
+        <label>来源网址（可选，供审核参考）<input key={note?.sourceUrl ?? ''} defaultValue={note?.sourceUrl ?? ''} name="sourceUrl" type="url" placeholder="https://..." /></label>
+        <label className="check"><input type="checkbox" checked={experienceBased} onChange={(event) => setExperienceBased(event.target.checked)} />这是个人经验，供审核时参考</label>
         <label className="check"><input name="aiDisclosure" type="checkbox" />原始内容使用过 AI 生成或改写</label>
         <button className="button primary" type="submit" disabled={submitting || topics.length === 0}>{submitting ? '提交中…' : '提交候选精华'}</button>
         {message && <p className="form-message" role="status">{message}</p>}

@@ -39,7 +39,7 @@ export default function ContributePage() {
       <Text>一句话结论（12～160 字）</Text><Textarea className="textarea" value={statement} onInput={event => setStatement(event.detail.value)} maxlength={160} />
       <Text>为什么有用（12～300 字）</Text><Textarea className="textarea small" value={whyUseful} onInput={event => setWhyUseful(event.detail.value)} maxlength={300} />
       <Text>需要注意（可选）</Text><Textarea className="textarea small" value={applicability} onInput={event => setApplicability(event.detail.value)} maxlength={300} />
-      <Text>来源链接</Text><Input className="input" value={sourceUrl} onInput={event => setSourceUrl(event.detail.value)} />
+      <Text>来源链接（可选，供审核参考）</Text><Input className="input" value={sourceUrl} onInput={event => setSourceUrl(event.detail.value)} />
       <Button className="primary-button" loading={working} disabled={working} onClick={() => void submit()}>提交审核</Button>
       {message && <Text className="message">{message}</Text>}
     </View>

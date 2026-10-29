@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { NotesController } from './notes/notes.controller';
+import { CourtModule } from './court/court.module';
 import { BullModule } from '@nestjs/bullmq';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
@@ -13,6 +14,7 @@ import { SubmissionsModule } from './submissions/submissions.module';
   imports: [
     DatabaseModule,
     AuthModule,
+    CourtModule,
     BullModule.forRoot({
       connection: {
         host: process.env.REDIS_HOST ?? 'localhost',

@@ -42,3 +42,5 @@ desktop.ini
 
 # WeChat Mini Program local settings
 apps/miniprogram/project.private.config.json
+
+apps/court-miniprogram/project.private.config.json

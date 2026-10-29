@@ -1,0 +1,8 @@
+{
+  "extends": "../../packages/config/tsconfig/taro.json",
+  "compilerOptions": {
+    "types": ["@tarojs/taro", "react"]
+  },
+  "include": ["src", "config"]
+}
+

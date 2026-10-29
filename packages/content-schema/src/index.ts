@@ -35,9 +35,7 @@ export const knowledgeContentSchema = z.array(contentBlockSchema).superRefine((b
   if (textLength > 900) {
     context.addIssue({ code: 'custom', message: '正式常识默认阅读时长不得超过约三分钟。' });
   }
-  if (!blocks.some((block) => block.type === 'source')) {
-    context.addIssue({ code: 'custom', message: '正式常识必须关联可核验来源。' });
-  }
+
 });
 
 export type ContentBlock = z.infer<typeof contentBlockSchema>;
@@ -55,14 +53,6 @@ export const createSubmissionSchema = z.object({
   sourceUrl: z.union([z.url(), z.literal('')]).optional(),
   experienceBased: z.boolean(),
   aiDisclosure: z.boolean(),
-}).superRefine((value, context) => {
-  if (!value.experienceBased && !value.sourceUrl) {
-    context.addIssue({
-      code: 'custom',
-      message: '非个人经验内容必须提供可核验来源。',
-      path: ['sourceUrl'],
-    });
-  }
 });
 
 export const createInternalCandidateSchema = z.object({
@@ -72,7 +62,7 @@ export const createInternalCandidateSchema = z.object({
   statement: candidateSummarySchema,
   whyUseful: z.string().trim().min(12).max(300),
   applicability: z.string().trim().max(300).refine((value) => !value || value.length >= 8, '需要注意填写时至少 8 个字').default(''),
-  sourceUrl: z.url(),
+  sourceUrl: z.union([z.url(), z.literal('')]).optional(),
   originType: z.enum(['source_discovery', 'coverage_gap', 'maintenance', 'admin_seed']),
   triggerReason: z.string().trim().min(4).max(500),
   aiDisclosure: z.boolean(),
